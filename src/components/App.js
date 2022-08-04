@@ -16,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     //Declares the recorder object and stores it in ref
-    recorder.current = new MicRecorder({ bitRate: 128 });
+    recorder.current = new MicRecorder({ bitRate: 320 });
   }, []);
 
   const startRecording = () => {

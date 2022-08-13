@@ -37,7 +37,7 @@ getVideo()
                     <TimeAgo date={video.date} />
                 </div>
                 <video controls width="70%">
-                <source src={`../../video/${id}.mp4`} type="video/mp4" />
+                <source src={`/api/file/video/${id}.mp4`} type="video/mp4" />
                 </video>
             </div>
             <div className="content">

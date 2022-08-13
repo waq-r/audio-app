@@ -140,7 +140,7 @@ getAudio(id)
             <div>{audio && parse(audio.description)}</div>
         </div>
         <div className="ui secondary inverted segment">
-            <audio controls src={audio && `../../audio/${id}.${audio.audio.split('/')[1]}`} type={audio && audio.audio}></audio>
+            <audio controls src={audio && `/api/file//audio/${id}.${audio.audio.split('/')[1]}`} type={audio && audio.audio}></audio>
             <div>
         <Form onSubmit={submitHandler} className ={formClass}>
           <Form.Group>

@@ -33,7 +33,7 @@ const uploadFile = (req, res) =>{
   
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     sampleFile = req.files.sampleFile
-    uploadPath = __dirname + '/../../public/' + req.params.media+ '/' + sampleFile.name
+    uploadPath = __dirname + '/../public/' + req.params.media+ '/' + sampleFile.name
   
     // Use the mv() method to place the file somewhere on your server
     sampleFile.mv(uploadPath, function(err) {
@@ -48,7 +48,7 @@ const uploadFile = (req, res) =>{
 
 const getFile = async (req, res) => {
   console.log("req params ", req.params);
-    const filePath = path.resolve(__dirname + '/../public/' + req.params.media)
+    const filePath = path.resolve(__dirname + `{/../public/${req.params.type}/${req.params.media}`)
     console.log("Path at server: ", filePath);
     res.sendFile(filePath)
 }

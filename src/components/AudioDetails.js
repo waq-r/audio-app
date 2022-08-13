@@ -1,5 +1,5 @@
+import React from 'react';
 import parse from 'html-react-parser';
-
 
 const AudioDetails = ({ audio }) => {
   return (

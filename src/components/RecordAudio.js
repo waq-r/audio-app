@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import AudioAnalyser from "react-audio-analyser";
-import { Button, Icon } from 'semantic-ui-react'
-
 
 export default class AudioRecorder extends Component {
   constructor(props) {
@@ -38,12 +36,12 @@ export default class AudioRecorder extends Component {
       // audioOptions: {sampleRate: 30000}, // 设置输出音频采样率
       status,
       audioSrc,
-      timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
+      timeslice: 300, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
       startCallback: e => {
-        console.log("succ start", e);
+        //console.log("succ start", e);
       },
       pauseCallback: e => {
-        console.log("succ pause", e);
+        //console.log("succ pause", e);
       },
       stopCallback: e => {
         const bUrl = window.URL.createObjectURL(e)
@@ -52,14 +50,13 @@ export default class AudioRecorder extends Component {
           audioSrc: bUrl
         });
 
-        console.log("sending callback", this.state.audioSrc);
-        if(this.state.audioSrc !== null && this.state.audioSrc !== undefined) {
-          this.props.addAudio(
-            {
-              audioSrc: this.state.audioSrc,
-              audioType: this.state.audioType
-            });
-          }
+            setTimeout(() => {
+              this.props.addAudio(
+                {
+                  audioSrc: this.state.audioSrc,
+                  audioType: this.state.audioType
+                });
+            }, 500);
 
         //console.log("succ stop", e);
       },
@@ -74,27 +71,28 @@ export default class AudioRecorder extends Component {
       <div>
         <AudioAnalyser {...audioProps}>
           <div className="ui inverted segment">
-            <Button
-              className="btn"
+            <button
+              className="ui labeled icon button"
               onClick={() => this.controlAudio("recording")}>
-              <Icon name='play' />
+              <i className="play icon" />
               Start
-            </Button>
-            <Button className="btn" onClick={() => this.controlAudio("paused")}>
-            <Icon name='pause' />
+            </button>
+            <button className="ui labeled icon button" onClick={() => this.controlAudio("paused")}>
+            <i className="pause icon" />
               Pause
-            </Button>
-            <Button
-              className="btn"
+            </button>
+            <button
+              className="ui labeled icon button"
               onClick={() => this.controlAudio("inactive")}
             >
-                <Icon name='stop' />
+                <i className="stop icon" />
               Stop
-            </Button>
+            </button>
           </div>
         </AudioAnalyser>
         <p>Audio format</p>
         <select
+          className="ui dropdown"
           name=""
           id=""
           onChange={e => this.changeScheme(e)}

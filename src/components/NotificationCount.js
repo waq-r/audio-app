@@ -1,25 +1,48 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+import {useAuthContext} from '../hooks/useAuthContext'
 
-const NotificationCount = (newNotification)=>{
 
-    const [notificationCount, setNotificationCount] = useState(0);
+const NotificationCount = () => {
+    const {user} = useAuthContext()
+    const [count, setCount] = useState(0);
 
-    const es = new EventSource('/stream');
+    useEffect(() => {
+        const interval = setInterval(
+            () => {
+                //get user notification count from db
+                const getNotification = async () => {
+                    const res = await fetch(`/api/user/notifications/${user._id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    const data = await res.json()
+                    if(res.ok) {
+                        const {notifications} = data;
+                        setCount(notifications)
+                    }
+                }
 
-        es.onmessage = (event) => {
-        console.log('Event data ', event.data);
-        setNotificationCount(notificationCount +1);
-    }
+                getNotification()
+            }
+            , 30000)
 
-    es.onerror = (error) =>{
-        console.log('Error: ',error)
-    }
-    es.onopen = (event) => {
-        console.log('Open: ', event)
-    }
+        return () => {
+          clearInterval(interval);
+        };
+      }, [user]);
 
     return (
-        <button className="ui button red">{notificationCount}</button>
+        <span> 
+            {count>0 &&
+            <label className="ui red circular label">{count}</label>
+            }
+            {count===0 &&
+            <label className="ui black circular label"></label>
+            }
+        </span>
     )
 }
 

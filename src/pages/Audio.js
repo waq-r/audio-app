@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import parse from 'html-react-parser';
-import {Form} from 'semantic-ui-react'
+import {useAuthContext} from '../hooks/useAuthContext'
 
 const Audio = ()=>{
 
@@ -13,8 +13,12 @@ const Audio = ()=>{
 
     const [message, setMessage] = useState({className: 'hidden', content: ''})
 
+    const {user} = useAuthContext()
+
     const submitHandler = async (e) => {
         e.preventDefault()
+
+        if(!user) return "You must be logged in to download this audio"
 
         setFormClass('loading')
 
@@ -23,6 +27,7 @@ const Audio = ()=>{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             },
             body: JSON.stringify({
                 "video": "video threeUser video",
@@ -34,12 +39,8 @@ const Audio = ()=>{
         const json = await respose.json()
 
         if(!respose.ok) {
-            console.log("not ok res ", json.msg);
             setMessage({className: 'negative', content: json.msg})
             setFormClass('')
-        }
-        if(respose.ok) {
-            console.log("ok res ", json)
         }
 
         //upload video to dir
@@ -51,10 +52,12 @@ const Audio = ()=>{
 
         const res = await fetch('/api/file/save/video', {
             method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            },
             body: formData,
         })
         const data = await res.json()
-        console.log("data", data);
 
         if(res.ok) {
             setFormClass('disabled')
@@ -70,6 +73,7 @@ const Audio = ()=>{
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "authorization": "Bearer "+user.token
           },
           body: JSON.stringify({
             "title": "Video response for: " + audio.title,
@@ -83,15 +87,13 @@ const Audio = ()=>{
         if(!notificationRes.ok) {
           console.log("add notification not ok ", notificationJson.error);
         }
-        if(notificationRes.ok) {
-          console.log("add notofication ok ", notificationJson.title);
-        }
 
         //increment +1 notification to admin
         const userRes = await fetch("/api/user/notifications/add/admin", {
             method: "GET",
             headers: {
             "Content-Type": "application/json",
+            "authorization": "Bearer "+user.token
             },
         })
 
@@ -100,34 +102,28 @@ const Audio = ()=>{
         if(!userRes.ok) {
             console.log("add notification to user not ok ", userJson.error);
         }
-        if(userRes.ok) {
-            console.log("Number of notifications sent: ", userJson.modifiedCount);
-        }
-
 
     }
 
-
     useEffect(() => {
-        const getAudio = async (id) => {
+        const getAudio = async () => {
 
         //get audio from api
         const response = await fetch(`/api/audio/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             },
         })
 
         const json = await response.json()
-        console.log(json.audio.description)
         setAudio(json.audio)
 
-
 }
-getAudio(id)
+getAudio()
 
-    }, [])
+    }, [user])
 
 
     return (
@@ -140,25 +136,22 @@ getAudio(id)
             <div>{audio && parse(audio.description)}</div>
         </div>
         <div className="ui secondary inverted segment">
-            <audio controls src={audio && `/api/file//audio/${id}.${audio.audio.split('/')[1]}`} type={audio && audio.audio}></audio>
-            <div>
-        <Form onSubmit={submitHandler} className ={formClass}>
-          <Form.Group>
-            <Form.Input
+            <audio controls src={audio && `/api/file/audio/${id}.${audio.audio.split('/')[1]}`} type={audio && audio.audio}></audio>
+            <div className="ui inverted segment">
+                <div className="header"><h3>Upload your video response</h3></div>
+        <form onSubmit={submitHandler} className ={`ui inverted form ${formClass}`}>
+            <input className={`ui inverted input ${formClass}`}
                 type="file"
               name='videoFile'
             />
-            <Form.Button content='Submit Video' className={formClass} />
-          </Form.Group>
-        </Form>
+            <button className={`ui button ${formClass}`} >Submit video</button>
+        </form>
         {message && <div className={`ui ${message.className} message`} >
         <div className="header">
             </div>
             <p>{message.content}</p>
             </div>
             }
-
-
       </div>
         </div>
         </div>

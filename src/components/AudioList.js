@@ -1,6 +1,9 @@
 import React, {useState} from "react";
+import {useAuthContext} from '../hooks/useAuthContext'
+
 
 const AudioList = ({ audioList, onDelete }) => {
+    const {user} = useAuthContext()
 
   const [message, setMessage] = useState(null);
 
@@ -15,7 +18,6 @@ const AudioList = ({ audioList, onDelete }) => {
   };
 
   const onSave = async (audio) => {
-    console.log("audio", audio);
     let audioId;
 
     //save audio to database
@@ -23,6 +25,7 @@ const AudioList = ({ audioList, onDelete }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${user.token}`
       },
       body: JSON.stringify({
         "audio": audio.blobType,
@@ -34,11 +37,9 @@ const AudioList = ({ audioList, onDelete }) => {
     const json = await response.json()
 
       if(!response.ok) {
-        console.log("not ok res ", json.error);
       }
       if(response.ok) {
         audioId = json.newAudio._id;
-        console.log("ok res ", audioId);
         resultMsg.idGenerated = true
         resultMsg.title = json.newAudio.title
       }
@@ -46,8 +47,6 @@ const AudioList = ({ audioList, onDelete }) => {
     const blob = await fetch(audio.blobURL)
     const b = await blob.blob()
     const fileName = audioId +'.'+ audio.blobType.split("/")[1]
-
-    console.log("fileNmae ", fileName, "blob type", b);
 
     const newFile = new File([b], fileName, {lastModified: Date.now(), type: audio.blobType})
 
@@ -57,14 +56,19 @@ const AudioList = ({ audioList, onDelete }) => {
 
     const res = await fetch('/api/file/save/audio', {
               method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${user.token}`
+              },
               body: formData,
     })
 
     const data = await res.json()
 
         if(res.ok) {
-            console.log("file saved", data.msg);
             resultMsg.upload = true
+        }
+        if(!res.ok) {
+          console.log("error ", data.error);
         }
 
         //add notification in database
@@ -72,6 +76,7 @@ const AudioList = ({ audioList, onDelete }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "authorization": "Bearer "+user.token
           },
           body: JSON.stringify({
             "title": "New audio: " + audio.title,
@@ -86,7 +91,6 @@ const AudioList = ({ audioList, onDelete }) => {
           console.log("add notification not ok ", notificationJson.error);
         }
         if(notificationRes.ok) {
-          console.log("add notofication ok ", notificationJson.title);
           resultMsg.notification = true
         }
 
@@ -95,6 +99,7 @@ const AudioList = ({ audioList, onDelete }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            "authorization": "Bearer "+user.token
           },
         })
 
@@ -104,7 +109,6 @@ const AudioList = ({ audioList, onDelete }) => {
           console.log("add notification to user not ok ", userJson.error);
         }
         if(userRes.ok) {
-          console.log("Number of notifications sent: ", userJson.modifiedCount);
           resultMsg.userNotified = true
           resultMsg.modifiedCount = userJson.modifiedCount
 
@@ -114,10 +118,8 @@ const AudioList = ({ audioList, onDelete }) => {
 
         //on susccess, delete audio from list
         const sucess = Object.values(resultMsg).filter(msg => msg === true)
-        console.log("sucess ", sucess.length);
         if(sucess.length === 4) {
           onDelete(audio)
-          console.log("audio deleted from list ", audio.id);
           //setMessage("Audio saved successfully")
         }
 

@@ -22,7 +22,6 @@ const uploadFile = (req, res) =>{
   }
 
   const saveFile = async (req, res) => {
-    console.log("Request Files ", req.params);
 
     let sampleFile
     let uploadPath
@@ -47,9 +46,7 @@ const uploadFile = (req, res) =>{
 }
 
 const getFile = async (req, res) => {
-  console.log("req params ", req.params);
     const filePath = path.resolve(__dirname + `{/../public/${req.params.type}/${req.params.media}`)
-    console.log("Path at server: ", filePath);
     res.sendFile(filePath)
 }
 

@@ -1,10 +1,13 @@
 import React, {useState, useEffect} from "react";
 import { useParams } from "react-router-dom";
 import TimeAgo from 'react-timeago'
+import {useAuthContext} from '../hooks/useAuthContext'
 
 const Video = () => {
     const { id } = useParams();
     const [video, setVideo] = useState(null);
+
+    const {user} = useAuthContext()
 
     useEffect(() => {
         const getVideo = async () => {
@@ -14,18 +17,20 @@ const Video = () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             },
         })
 
         const json = await response.json()
-        console.log(json.video)
         setVideo(json)
 
 
 }
-getVideo()
 
-    }, [])
+        if(user) {
+            getVideo(id)
+        }
+    }, [user])
 
     return (
         <div className="ui segment">

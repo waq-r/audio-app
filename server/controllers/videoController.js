@@ -26,7 +26,6 @@ const getVideo = async (req, res) => {
 
 // add a video
 const addVideo = async (req, res) => {
-    console.log("req.body ", req.body);
     try {
         const {video, audioId, userId} = req.body
 

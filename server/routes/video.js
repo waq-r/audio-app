@@ -4,6 +4,11 @@ const router = express.Router()
 // controller functions
 const { getVideo, getAllVideos, addVideo, deleteVideo } = require('../controllers/videoController')
 
+const requireAuth = require('../middleware/requireAuth')
+const { use } = require('./user')
+
+router.use(requireAuth)
+
 // get a video route
 router.get('/:id', getVideo)
 

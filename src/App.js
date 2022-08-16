@@ -1,13 +1,19 @@
 import React from 'react'
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { useAuthContext } from './hooks/useAuthContext';
+
 import Navbar from "./components/Navbar";
-import AdminNotification from "./pages/AdminNotification";
+import Home from "./pages/Home";
+import Login from './pages/Login'
+import Signup from './pages/Signup'
 import UserNotification from "./pages/UserNotification";
 import Audio from "./pages/Audio";
 import Video from "./pages/Video";
 import NewAudio from "./pages/NewAudio";
+import Users from "./pages/Users";
 
 function App() {
+  const { user } = useAuthContext()
   return (
     <BrowserRouter>
     <div style={{"backgroundColor": "black"}}>
@@ -15,22 +21,30 @@ function App() {
         <Routes>
             <Route 
                 path="/" exact
-                element={<NewAudio />} />
+                element={user ? <Home /> : <Navigate to="/login" />} />
             <Route 
-                path="/pages/notification/admin" exact 
-                element={<AdminNotification />} />
+                path="/pages/users" exact 
+                element={user && user.role === 'admin'? <Users /> : <Navigate to="/" />} />
             <Route 
                 path="/pages/notification/user" exact 
-                element={<UserNotification />} />
+                element={ user ? <UserNotification /> : <Navigate to="/" />} />
             <Route
                 path="/pages/audio/:id" exact
-                element={<Audio />} />
+                element={ user ? <Audio /> : <Navigate to="/" />} />
             <Route
                 path="/pages/video/:id" exact
-                element={<Video />} />
+                element={user && user.role === 'admin'? <Video /> : <Navigate to="/" />} />
             <Route
                 path="/pages/newaudio" exact
                 element={<NewAudio />} />
+            <Route 
+              path="/login" 
+              element={!user ? <Login /> : <Navigate to="/" />} 
+            />
+            <Route 
+              path="/signup" 
+              element={!user ? <Signup /> : <Navigate to="/" />} 
+            />
         </Routes>
     </div>
     </BrowserRouter>

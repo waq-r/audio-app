@@ -1,26 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useRef, useState } from "react";
 import RecordAudio from "../components/RecordAudio";
-//import RichTextEditor from "../components/RitchTextEditor";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import AudioList from "../components/AudioList";
+import {useAuthContext} from '../hooks/useAuthContext'
+import { Navigate } from "react-router-dom";
+
 
 const NewAudio = () => {
 
+    const {user} = useAuthContext()
     const [audioList, setAudioList] = useState([]); //Array of audios
     const description = useRef(null); //Ref for textarea
     const title = useRef(null); //Ref for textarea
 
-
-    useEffect(() => {
-        console.log("useeffect audio", audioList);
-        //console.log("useeffect notes", notes.current.editor.getData());
-
-    }, [audioList]);
-
+    if(user.role !== 'admin') {
+        return <Navigate to="/login" />
+    }
+   
     const addAudio = (audio) => {
-        //const audioUrl = URL.createObjectURL(audio); //generates url from blob
-        console.log("audio callback", audio);
         setAudioList([
             { 
                 id: Date.now(),
@@ -31,6 +29,7 @@ const NewAudio = () => {
             },  ...audioList ]);
 
         console.log("audioList", audioList);
+
 
     }
 
@@ -56,7 +55,7 @@ const NewAudio = () => {
                 />
             </div>
             <div className="ui inverted segment center aligned">
-            <RecordAudio addAudio={addAudio}/>
+            <RecordAudio addAudio={addAudio} />
             </div>
             <div className="ui inverted verticle segment">
             <AudioList audioList={audioList} onDelete={deleteAudio}/>

@@ -1,8 +1,14 @@
 const express = require('express')
 
+const {addNotification, getAllNotifications, getNotification} = require('../controllers/notificationsController')
+
+const requireAuth = require('../middleware/requireAuth')
+
 const router = express.Router()
 
-const {addNotification, getAllNotifications, getNotification} = require('../controllers/notificationsController')
+//middleware user authentication
+router.use(requireAuth)
+
 // add notification route
 router.post('/add', addNotification)
 

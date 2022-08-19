@@ -1,24 +1,43 @@
 import React, {useState} from "react";
 import {useAuthContext} from '../hooks/useAuthContext'
+import SelectUsers from "./SelectUsers";
 
 
 const AudioList = ({ audioList, onDelete }) => {
-    const {user} = useAuthContext()
+  
+  const {user} = useAuthContext()
 
   const [message, setMessage] = useState(null);
 
-  const resultMsg = {
+  const [users, setUsers] = useState([])
+
+  const resultObj = {
     'idGenerated':null, // boolean
     'upload': null, // boolean
     'notification': null, // boolean
     'userNotified': null, // boolean
-    modifiedCount : null, // number
+    modifiedCount : 0, // number
     title: null, // string
   
   };
 
+  let resultMsg = {...resultObj};
+
+  const userToSend = users.filter((usr) => usr.selected)
+
+  // let usersToNotify = [];
+
+
+  // const onUserSelect = (selectedUsers) => {
+  //   console.log("selected users ", selectedUsers);
+  //   usersToNotify = selectedUsers;
+  //   console.log("callback usersToNotify ", usersToNotify);
+  // }
+
+
   const onSave = async (audio) => {
     let audioId;
+    let notificationId;
 
     //save audio to database
     const response = await fetch("/api/audio/save", {
@@ -92,35 +111,67 @@ const AudioList = ({ audioList, onDelete }) => {
         }
         if(notificationRes.ok) {
           resultMsg.notification = true
+          notificationId = notificationJson._id
         }
 
         //increment +1 notification to all users
-        const userRes = await fetch("/api/user/notifications/add/user", {
-          method: "GET",
+        // const userRes = await fetch("/api/user/notifications/add/user", {
+        //   method: "GET",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "authorization": "Bearer "+user.token
+        //   },
+        // })
+        // if(!userRes.ok) {
+        //   console.log("add notification to user not ok ", userJson.error);
+        // }
+        // if(userRes.ok) {
+        //   resultMsg.userNotified = true
+        //   resultMsg.modifiedCount = userJson.modifiedCount
+
+        // }
+
+        // add notification to selected users
+
+        const selectedUsersIds = userToSend.map(usr => usr._id)
+
+        //forEach needs to run async
+        selectedUsersIds.forEach(async (id) => {
+
+          const userRes = await fetch("/api/usernotification", {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             "authorization": "Bearer "+user.token
           },
+          body: JSON.stringify({
+            "notification": notificationId,
+            "user": id,
+            "read": false
+          }),
         })
 
         const userJson = await userRes.json()
 
         if(!userRes.ok) {
-          console.log("add notification to user not ok ", userJson.error);
+          console.log("add notification to users not ok ", userJson.error);
         }
         if(userRes.ok) {
           resultMsg.userNotified = true
-          resultMsg.modifiedCount = userJson.modifiedCount
-
+          resultMsg.modifiedCount++
         }
+    })
 
         setMessage(resultMsg)
 
         //on susccess, delete audio from list
         const sucess = Object.values(resultMsg).filter(msg => msg === true)
-        if(sucess.length === 4) {
+
+        //reset resultMsg
+        resultMsg = {...resultObj};
+
+        if(sucess.length >= 3) {
           onDelete(audio)
-          //setMessage("Audio saved successfully")
         }
 
 
@@ -129,6 +180,11 @@ const AudioList = ({ audioList, onDelete }) => {
   
   return (
     <div className="ui inverted segment">
+
+        <div className="ui inverted segment center aligned">
+            <SelectUsers setUsers={setUsers} users={users} />
+        </div>
+
       {message && <div className="ui inverted positive message">
         <div className="header">
           Audio status: {message.title}
@@ -155,7 +211,7 @@ const AudioList = ({ audioList, onDelete }) => {
                 className="ui button"
                 onClick={() => onSave(audio)}
               >
-                Save
+                Send to {userToSend.length} {userToSend.length > 1 ? 'users' : 'user'}
               </button>
               <button
                 className="ui button"

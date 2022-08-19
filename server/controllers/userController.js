@@ -103,6 +103,19 @@ const setUserStatus = async (req, res) => {
     }
 }
 
+// get admin's id by role
+const getAdminId = async (req, res) => {
+
+    try {
+        const user = await User.findOne({role: 'admin'})
+        res.status(201).json(user._id)
+    }
+    catch (err) {
+        res.status(400).json({error: err.message})
+    }
+}
+
+
 
 
 module.exports = { 
@@ -112,5 +125,6 @@ module.exports = {
                     resetUserNotification, 
                     getUserNotification,
                     getAllUsers,
-                    setUserStatus
+                    setUserStatus,
+                    getAdminId
                   }

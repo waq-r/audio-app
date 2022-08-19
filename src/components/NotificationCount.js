@@ -4,14 +4,15 @@ import {useAuthContext} from '../hooks/useAuthContext'
 
 const NotificationCount = () => {
     const {user} = useAuthContext()
-    const [count, setCount] = useState(0);
+    const [count, setCount] = useState(null);
+    const [firstLoad, setFirstLoad] = useState(true);
 
     useEffect(() => {
         const interval = setInterval(
             () => {
                 //get user notification count from db
                 const getNotification = async () => {
-                    const res = await fetch(`/api/user/notifications/${user._id}`, {
+                    const res = await fetch(`/api/usernotification/count/${user._id}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -20,26 +21,29 @@ const NotificationCount = () => {
                     })
                     const data = await res.json()
                     if(res.ok) {
-                        const {notifications} = data;
-                        setCount(notifications)
+                        setCount(data)
+                        setFirstLoad(false)
+                    }
+                    if(!res.ok) {
+                        console.log("notification count not ok ", data.error);
                     }
                 }
 
                 getNotification()
             }
-            , 30000)
+            , firstLoad?1000:60000)
 
         return () => {
           clearInterval(interval);
         };
-      }, [user]);
+      }, [user, firstLoad]);
 
     return (
         <span> 
             {count>0 &&
             <label className="ui red circular label">{count}</label>
             }
-            {count===0 &&
+            {(count===0 || count===null) &&
             <label className="ui black circular label"></label>
             }
         </span>

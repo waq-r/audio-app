@@ -10,47 +10,66 @@ const UserNotification = () => {
 
     useEffect(() => {
         const getNotification = async () => {
-            const res = await fetch('/api/notification', {
-                method: 'POST',
+            const res = await fetch('/api/usernotification/'+user._id, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${user.token}`
-                },
-                body: JSON.stringify({forWhom: user.role}),
+                }
 
             })
 
             const data = await res.json()
 
             if(res.ok) {
-                const {notifications} = data;
-                setNotification(notifications)
+                setNotification(data)
             }
 
             //reset user notifications to 0 in db
-            const resetRes = await fetch('/api/user/notifications/reset/'+user._id, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
-                },
-            })
+            // const resetRes = await fetch('/api/user/notifications/reset/'+user._id, {
+            //     method: 'GET',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'Authorization': `Bearer ${user.token}`
+            //     },
+            // })
 
-            const resetData = await resetRes.json()
+            // const resetData = await resetRes.json()
 
-            if(resetRes.ok) {
-                console.log("reset user notifications to 0", resetData.msg);
-            }
+            // if(resetRes.ok) {
+            //     console.log("reset user notifications to 0", resetData.msg);
+            // }
 
-            if(!resetRes.ok) {
-                console.log("reset user notifications not ok ", resetData.error);
-            }
+            // if(!resetRes.ok) {
+            //     console.log("reset user notifications not ok ", resetData.error);
+            // }
 
         }
         if(user) {
             getNotification()
         }
     }, [user]);
+
+    const markAsRead = async (notification) => {
+        if(notification.read === false) {
+        const res = await fetch('/api/usernotification/'+notification._id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify({read: true})
+        })
+
+        const data = await res.json()
+
+        if(!res.ok) {
+            console.log("mark as read in db not ok ", data.error);
+        }
+
+    }
+
+    }
 
     
 
@@ -59,12 +78,15 @@ const UserNotification = () => {
             <h1>Notifications</h1>
             <div className="ui relaxed divided inverted selection list">
             {notification && notification.map((notification, index) => (
-                <div className="item" key={notification._id}>
-                    <Link className="ui small image" to={`/pages/audio/${notification.link.split('.')[0]}`}>
-                    <i className="large bell outline middle aligned icon"></i>
+                <div className="item" key={notification._id} onClick={()=>markAsRead(notification)} >
+                    <Link className="ui small image" to={`/pages/audio/${notification.notification.link.split('.')[0]}`}>
+                    <i className= {
+                        notification.read?
+                        'large bell red outline middle aligned icon'
+                        :'large red bell middle aligned icon'} ></i>
                     <div className="content">
-                    <div className="header">{notification.title}</div>
-                    <div className="description"><TimeAgo date={notification.createdAt} /></div>
+                    <div className="header">{notification.notification.title}</div>
+                    <div className="description"><TimeAgo date={notification.notification.createdAt} /></div>
                     </div>
                     </Link>
                     </div>

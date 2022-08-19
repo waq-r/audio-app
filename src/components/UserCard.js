@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { Navigate } from "react-router-dom";
 import {useAuthContext} from '../hooks/useAuthContext'
+import TimeAgo from 'react-timeago'
 
 const UserCard = ({ usr }) => {
 
@@ -53,6 +54,10 @@ const UserCard = ({ usr }) => {
                         <div className="item">
                         <i className="mail icon"></i>
                             {usr.email}
+                            </div>
+                        <div className="item">
+                        <i className="clock icon"></i>
+                            <TimeAgo date={usr.date} />
                             </div>
                     </div>     
                 </div>

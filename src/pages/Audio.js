@@ -87,9 +87,27 @@ const Audio = ()=>{
         if(!notificationRes.ok) {
           console.log("add notification not ok ", notificationJson.error);
         }
+        if(notificationRes.ok) {
+          //console.log("add notification ok ", notificationJson._id);
+        }
 
         //increment +1 notification to admin
-        const userRes = await fetch("/api/user/notifications/add/admin", {
+        // const userRes = await fetch("/api/user/notifications/add/admin", {
+        //     method: "GET",
+        //     headers: {
+        //     "Content-Type": "application/json",
+        //     "authorization": "Bearer "+user.token
+        //     },
+        // })
+
+        // const userJson = await userRes.json()
+
+        // if(!userRes.ok) {
+        //     console.log("add notification to user not ok ", userJson.error);
+        // }
+
+        //get admin's id
+        const adminRes = await fetch("/api/user/adminid", {
             method: "GET",
             headers: {
             "Content-Type": "application/json",
@@ -97,11 +115,40 @@ const Audio = ()=>{
             },
         })
 
-        const userJson = await userRes.json()
+        const adminJson = await adminRes.json()
 
-        if(!userRes.ok) {
-            console.log("add notification to user not ok ", userJson.error);
+        if(!adminRes.ok) {
+            console.log("get admin id not ok ", adminJson.error);
         }
+        if(adminRes.ok) {
+            //console.log("get admin id ok ", adminJson);
+        }
+
+        //add notification to admin in database
+        const adminNotificationRes = await fetch("/api/usernotification", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            "authorization": "Bearer "+user.token
+            },
+            body: JSON.stringify({
+                "user": adminJson,
+                "notification": notificationJson._id,
+                "read": false
+            }),
+        })
+
+        const adminNotificationJson = await adminNotificationRes.json()
+
+        if(!adminNotificationRes.ok) {
+            console.log("add notification to admin not ok ", adminNotificationJson.error);
+        }
+        if(adminNotificationRes.ok) {
+            //console.log("add notification to admin ok ", adminNotificationJson);
+        }
+
+
+
 
     }
 

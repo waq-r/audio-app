@@ -10,6 +10,7 @@ const fileRoutes = require('./routes/file')
 const videoRoutes = require('./routes/video')
 const audioRoutes = require('./routes/audio')
 const notificationRoutes = require('./routes/notification')
+const userNotificationRoutes = require('./routes/userNotification')
 
 // express app
 const app = express()
@@ -30,6 +31,7 @@ app.use('/api/file', fileRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/notification', notificationRoutes)
 app.use('/api/video', videoRoutes)
+app.use('/api/usernotification', userNotificationRoutes)
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI).then(() => {

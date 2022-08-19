@@ -24,16 +24,15 @@ const userSchema = new Schema({
     default: 'user',
     enum: ['user', 'admin']
     },
-    notification: {
-        type: Number,
-        required: true,
-        default: 0
-    },
     active: {
         type: Boolean,
         required: true,
         default: true
-    }
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
 })
 
 // static signup method

@@ -30,8 +30,8 @@ const Navbar = () => {
             )}
                 {user && (
                     <div className="ui inverted menu">
-                    <span>{user.email}</span>
-                    <button onClick={handleClick}>Log out</button>
+                    <span className="item">{user.name}</span>
+                    <button className="ui primary item basic button" onClick={handleClick}>Log out</button>
                     </div>
                 )}
                 {!user && (

@@ -14,7 +14,7 @@ const NewAudio = () => {
     const description = useRef(null); //Ref for textarea
     const title = useRef(null); //Ref for textarea
 
-    if(user.role !== 'admin') {
+    if(user && user.role !== 'admin') {
         return <Navigate to="/login" />
     }
    
@@ -27,9 +27,6 @@ const NewAudio = () => {
                 title: title.current.value || "Untitled",
                 description: description.current.editor.getData() || "No notes",
             },  ...audioList ]);
-
-        console.log("audioList", audioList);
-
 
     }
 
@@ -57,6 +54,7 @@ const NewAudio = () => {
             <div className="ui inverted segment center aligned">
             <RecordAudio addAudio={addAudio} />
             </div>
+
             <div className="ui inverted verticle segment">
             <AudioList audioList={audioList} onDelete={deleteAudio}/>
             </div>

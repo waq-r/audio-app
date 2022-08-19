@@ -22,6 +22,13 @@ export const useLogin = () => {
       setError(json.error)
     }
     if (response.ok) {
+      //check is user is deactivated
+      if(json.active === false) {
+        setIsLoading(false)
+        setError("Your account has been deactivated.")
+      }
+      if(json.active === true) {
+
       // save the user to local storage
       localStorage.setItem('user', JSON.stringify(json))
 
@@ -30,6 +37,8 @@ export const useLogin = () => {
 
       // update loading state
       setIsLoading(false)
+
+      }
     }
   }
 

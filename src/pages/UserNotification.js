@@ -8,6 +8,9 @@ const UserNotification = () => {
 
     const {user} = useAuthContext()
 
+    //url path audio or video
+    const media = user.role === 'admin' ? 'video' : 'audio'
+
     useEffect(() => {
         const getNotification = async () => {
             const res = await fetch('/api/usernotification/'+user._id, {
@@ -77,9 +80,9 @@ const UserNotification = () => {
         <div className="ui inverted segment">
             <h1>Notifications</h1>
             <div className="ui relaxed divided inverted selection list">
-            {notification && notification.map((notification, index) => (
+            {notification && notification.map((notification) => (
                 <div className="item" key={notification._id} onClick={()=>markAsRead(notification)} >
-                    <Link className="ui small image" to={`/pages/audio/${notification.notification.link.split('.')[0]}`}>
+                    <Link className="ui small image" to={`/pages/${notification.notification.link.split('.')[1]==='mp4'?'video':'audio'}/${notification.notification.link.split('.')[0]}`}>
                     <i className= {
                         notification.read?
                         'large bell red outline middle aligned icon'

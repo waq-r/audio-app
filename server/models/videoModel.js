@@ -9,11 +9,13 @@ const videoSchema = new Schema({
         required: true
     },
     audioId: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Audio',
         required: true
     },
     userId: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     date: {

@@ -30,15 +30,16 @@ const Audio = ()=>{
                 'Authorization': `Bearer ${user.token}`
             },
             body: JSON.stringify({
-                "video": "video threeUser video",
+                "video": "New Video",
                 "audioId": id,
-                "userId": 9876543
+                "userId": user._id
             }),
         })
 
         const json = await respose.json()
 
         if(!respose.ok) {
+            console.log("error", json.msg);
             setMessage({className: 'negative', content: json.msg})
             setFormClass('')
         }

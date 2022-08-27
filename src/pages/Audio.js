@@ -22,6 +22,13 @@ const Audio = ()=>{
 
         setFormClass('loading')
 
+        if(!e.target.videoFile.files[0]){
+            setMessage({className: 'negative', content: 'Please select a file.'})
+            setFormClass('')
+            return
+            
+        }
+
         //add video to db
         const respose = await fetch('/api/video/add', {
             method: 'POST',
@@ -30,7 +37,7 @@ const Audio = ()=>{
                 'Authorization': `Bearer ${user.token}`
             },
             body: JSON.stringify({
-                "video": "New Video",
+                "video": e.target.videoFile.files[0].name,
                 "audioId": id,
                 "userId": user._id
             }),
@@ -107,7 +114,7 @@ const Audio = ()=>{
         //     console.log("add notification to user not ok ", userJson.error);
         // }
 
-        //get admin's id
+        //get all admins
         const adminRes = await fetch("/api/user/adminid", {
             method: "GET",
             headers: {
@@ -116,16 +123,19 @@ const Audio = ()=>{
             },
         })
 
-        const adminJson = await adminRes.json()
+        const admins = await adminRes.json()
 
         if(!adminRes.ok) {
-            console.log("get admin id not ok ", adminJson.error);
+            console.log("get admin id not ok ", admins.error);
         }
         if(adminRes.ok) {
-            //console.log("get admin id ok ", adminJson);
+            //console.log("get admin id ok ", admins);
         }
 
-        //add notification to admin in database
+        //add notification to all admins in database
+
+        admins.forEach(async (admin) => {
+
         const adminNotificationRes = await fetch("/api/usernotification", {
             method: "POST",
             headers: {
@@ -133,7 +143,7 @@ const Audio = ()=>{
             "authorization": "Bearer "+user.token
             },
             body: JSON.stringify({
-                "user": adminJson,
+                "user": admin._id,
                 "notification": notificationJson._id,
                 "read": false
             }),
@@ -147,6 +157,9 @@ const Audio = ()=>{
         if(adminNotificationRes.ok) {
             //console.log("add notification to admin ok ", adminNotificationJson);
         }
+
+    })
+
 
 
 
@@ -190,9 +203,10 @@ getAudio()
         <form onSubmit={submitHandler} className ={`ui inverted form ${formClass}`}>
             <input className={`ui inverted input ${formClass}`}
                 type="file"
-              name='videoFile'
+                name='videoFile'
+                accept="video/mp4,video/ogg,video/webm"
             />
-            <button className={`ui button ${formClass}`} >Submit video</button>
+            <button className={`ui segment big button ${formClass}`} >Submit video</button>
         </form>
         {message && <div className={`ui ${message.className} message`} >
         <div className="header">

@@ -27,7 +27,7 @@ const Users = () => {
 
         if(res.ok) {
             setUsers(data)
-            console.log("users ", data);
+            //console.log("users ", data);
         }
 
         if(!res.ok) {

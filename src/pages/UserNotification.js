@@ -82,7 +82,7 @@ const UserNotification = () => {
             <div className="ui relaxed divided inverted selection list">
             {notification && notification.map((notification) => (
                 <div className="item" key={notification._id} onClick={()=>markAsRead(notification)} >
-                    <Link className="ui small image" to={`/pages/${notification.notification.link.split('.')[1]==='mp4'?'video':'audio'}/${notification.notification.link.split('.')[0]}`}>
+                    <Link className="ui small image" to={`/pages/${media}/${notification.notification.link.split('.')[0]}`}>
                     <i className= {
                         notification.read?
                         'large bell red outline middle aligned icon'

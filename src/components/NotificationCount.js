@@ -1,17 +1,22 @@
 import React, {useState, useEffect} from "react";
 import {useAuthContext} from '../hooks/useAuthContext'
+import { useLogout } from '../hooks/useLogout'
+
 
 
 const NotificationCount = () => {
     const {user} = useAuthContext()
     const [count, setCount] = useState(null);
     const [firstLoad, setFirstLoad] = useState(true);
+    const { logout } = useLogout()
+
 
     useEffect(() => {
         const interval = setInterval(
             () => {
                 //get user notification count from db
                 const getNotification = async () => {
+                    try {
                     const res = await fetch(`/api/usernotification/count/${user._id}`, {
                         method: 'GET',
                         headers: {
@@ -19,19 +24,33 @@ const NotificationCount = () => {
                             'Authorization': `Bearer ${user.token}`
                         }
                     })
+
+                        if (!res.ok) throw res
                     const data = await res.json()
-                    if(res.ok) {
-                        setCount(data)
-                        setFirstLoad(false)
+
+                    setCount(data)
+                    setFirstLoad(false)
+                }
+                    catch (err) {
+                        console.log(err.status)
+                        if ([401, 403].includes(err.status)){
+                            logout()
+
+                        }
                     }
-                    if(!res.ok) {
-                        console.log("notification count not ok ", data.error);
-                    }
+                    
+                    // if(res.ok) {
+                    //     setCount(data)
+                    //     setFirstLoad(false)
+                    // }
+                    // if(!res.ok) {
+                    //     console.log("notification count not ok ", data.error);
+                    // }
                 }
 
                 getNotification()
             }
-            , firstLoad?1000:60000)
+            , firstLoad?1000:45000)
 
         return () => {
           clearInterval(interval);

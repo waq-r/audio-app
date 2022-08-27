@@ -82,7 +82,7 @@ const getUserNotification = async (req, res) => {
 // get all users
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find()
+        const users = await User.find({role: 'user'})
         res.status(201).json(users)
     }
     catch (err) {
@@ -107,8 +107,8 @@ const setUserStatus = async (req, res) => {
 const getAdminId = async (req, res) => {
 
     try {
-        const user = await User.findOne({role: 'admin'})
-        res.status(201).json(user._id)
+        const admins = await User.find({role: 'admin'})
+        res.status(200).json(admins)
     }
     catch (err) {
         res.status(400).json({error: err.message})

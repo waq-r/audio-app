@@ -41,8 +41,8 @@ const Video = () => {
                     <span className="date">Shared </span>
                     <TimeAgo date={video.date} />
                 </div>
-                <video controls width="70%">
-                <source src={`/api/file/video/${id}.mp4`} type="video/mp4" />
+                <video controls width="100%">
+                <source src={`/api/file/video/${id}.${video.video.split('.')[1]}`} type="video/mp4" />
                 </video>
             </div>
             <div className="content">

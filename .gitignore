@@ -10,8 +10,6 @@
 
 # production
 /frontend/build
-/server/public/video
-/server/public/audio
 
 
 # misc

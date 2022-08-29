@@ -42,7 +42,7 @@ const Video = () => {
                     <TimeAgo date={video.date} />
                 </div>
                 <video controls width="100%">
-                <source src={`/api/file/video/${id}.${video.video.split('.')[1]}`} type="video/mp4" />
+                <source src={`/api/file/video/${id}.${video.video.split('.')[1] || 'mp4'}`} type="video/mp4" />
                 </video>
             </div>
             <div className="content">

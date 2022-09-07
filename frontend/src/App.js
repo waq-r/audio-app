@@ -11,6 +11,7 @@ import Audio from "./pages/Audio";
 import Video from "./pages/Video";
 import NewAudio from "./pages/NewAudio";
 import Users from "./pages/Users";
+import Recordings from './pages/Recordings';
 
 function App() {
   const { user } = useAuthContext()
@@ -37,6 +38,9 @@ function App() {
             <Route
                 path="/pages/newaudio" exact
                 element={<NewAudio />} />
+            <Route
+                path="/pages/recordings/:id" exact
+                element={<Recordings />} />
             <Route 
               path="/login" 
               element={!user ? <Login /> : <Navigate to="/" />} 

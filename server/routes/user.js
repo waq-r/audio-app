@@ -9,7 +9,7 @@ const {
         getUserNotification,
         getAllUsers,
         setUserStatus,
-        getAdminId
+        getUserById
         } = require('../controllers/userController')
 
 const requireAuth = require('../middleware/requireAuth')
@@ -39,12 +39,12 @@ router.get('/notifications/reset/:id', resetUserNotification)
 router.get('/notifications/:id', getUserNotification)
 
 //get all users
-router.get('/', getAllUsers)
+router.post('/', getAllUsers)
+
+//get a user by id
+router.get('/:id', getUserById)
 
 //set user's status
 router.post('/status', setUserStatus)
-
-//get admin id
-router.get('/adminid', getAdminId)
 
 module.exports = router

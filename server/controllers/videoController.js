@@ -64,4 +64,37 @@ const deleteVideo = async (req, res) => {
 
 }
 
-module.exports = { getVideo, getAllVideos, addVideo, deleteVideo }
+// Update a video
+const updateVideo = async (req, res) => {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ msg: 'Invalid ID. No such video' })
+    }
+
+    const { video, downloaded, date } = req.body
+
+    const videoFields = {}
+    if (video) videoFields.video = video
+    if (downloaded === true || downloaded === false) videoFields.downloaded = downloaded
+    if (date) videoFields.date = date
+
+    try{
+        const videoUpdate = await Video.findByIdAndUpdate(
+            { _id: id },
+            { $set: videoFields },
+            { new: true }
+        )
+        res.json(videoUpdate)
+    }
+
+    catch (err) {
+        return res.status(400).json({ msg: err.message })
+    }
+
+}
+    
+
+
+
+module.exports = { getVideo, getAllVideos, addVideo, deleteVideo, updateVideo } 

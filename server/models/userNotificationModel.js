@@ -17,6 +17,18 @@ const userNotificationSchema = new Schema({
         type: Boolean,
         default: false
     },
+    audioId:{
+        type: Schema.Types.ObjectId,
+        ref: 'Audio',
+        required: false,
+        default: null
+    },
+    videoId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Video',
+        required: false,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

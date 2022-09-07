@@ -2,7 +2,7 @@ const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 
 const createToken = (_id) => {
-  return jwt.sign({_id}, process.env.SECRET, { expiresIn: '3d' })
+  return jwt.sign({_id}, process.env.SECRET, { expiresIn: '9d' })
 }
 
 // login a user
@@ -82,7 +82,7 @@ const getUserNotification = async (req, res) => {
 // get all users
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({role: 'user'})
+        const users = await User.find(req.body)
         res.status(201).json(users)
     }
     catch (err) {
@@ -103,15 +103,17 @@ const setUserStatus = async (req, res) => {
     }
 }
 
-// get admin's id by role
-const getAdminId = async (req, res) => {
+
+//get a user by id
+const getUserById = async (req, res) => {
+    const { id } = req.params
 
     try {
-        const admins = await User.find({role: 'admin'})
-        res.status(200).json(admins)
+        const user = await User.findById(id)
+        res.status(200).json(user)
     }
     catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(400).json({ error: err.message })
     }
 }
 
@@ -126,5 +128,5 @@ module.exports = {
                     getUserNotification,
                     getAllUsers,
                     setUserStatus,
-                    getAdminId
+                    getUserById
                   }

@@ -18,6 +18,11 @@ const videoSchema = new Schema({
         ref: 'User',
         required: true
     },
+    downloaded: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
     date: {
         type: Date,
         default: Date.now

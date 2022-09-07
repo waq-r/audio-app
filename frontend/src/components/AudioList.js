@@ -147,6 +147,8 @@ const AudioList = ({ audioList, onDelete }) => {
           body: JSON.stringify({
             "notification": notificationId,
             "user": id,
+            "audioId": audioId,
+            "videoId": null,
             "read": false
           }),
         })

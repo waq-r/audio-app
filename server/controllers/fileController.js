@@ -45,9 +45,16 @@ const uploadFile = (req, res) =>{
 
 }
 
+//Download file from express js server
 const getFile = async (req, res) => {
     const filePath = path.resolve(__dirname + `{/../public/${req.params.type}/${req.params.media}`)
-    res.sendFile(filePath)
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            res.status(500).send({
+                message: "Could not download the file. " + err,
+            });
+        }
+    } )
 }
 
 

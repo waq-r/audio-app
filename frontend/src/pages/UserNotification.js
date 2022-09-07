@@ -28,25 +28,6 @@ const UserNotification = () => {
                 setNotification(data)
             }
 
-            //reset user notifications to 0 in db
-            // const resetRes = await fetch('/api/user/notifications/reset/'+user._id, {
-            //     method: 'GET',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${user.token}`
-            //     },
-            // })
-
-            // const resetData = await resetRes.json()
-
-            // if(resetRes.ok) {
-            //     console.log("reset user notifications to 0", resetData.msg);
-            // }
-
-            // if(!resetRes.ok) {
-            //     console.log("reset user notifications not ok ", resetData.error);
-            // }
-
         }
         if(user) {
             getNotification()
@@ -82,7 +63,7 @@ const UserNotification = () => {
             <div className="ui relaxed divided inverted selection list">
             {notification && notification.map((notification) => (
                 <div className="item" key={notification._id} onClick={()=>markAsRead(notification)} >
-                    <Link className="ui small image" to={`/pages/${media}/${notification.notification.link.split('.')[0]}`}>
+                    <Link className="ui small image" to={`/pages/${media}/${notification._id}`}>
                     <i className= {
                         notification.read?
                         'large bell red outline middle aligned icon'

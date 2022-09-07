@@ -26,7 +26,6 @@ const getAllAudios = (req, res) => {
 
 const saveAudio = async (req, res) => {
     const {audio, title, description} = req.body
-    console.log(req.body)
     try {
         const newAudio = await Audio.create({audio, title, description})
         res.status(200).json({newAudio})

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {useAuthContext} from '../hooks/useAuthContext'
 import TimeAgo from 'react-timeago'
 
@@ -50,6 +50,9 @@ const UserCard = ({ usr }) => {
                         <div className="item">
                         <i className="user icon"></i>
                             {usr.name}
+                            </div>
+                        <div className="item">
+                        <Link to={`/pages/recordings/${usr._id}`} className="ui button">Recordings</Link>
                             </div>
                         <div className="item">
                         <i className="mail icon"></i>

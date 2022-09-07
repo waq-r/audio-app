@@ -16,11 +16,14 @@ const Users = () => {
         
     const getUsers = async () => {
         const res = await fetch('/api/user', {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${user.token}`
             },
+            body: JSON.stringify({
+                "role": "user"
+              }),
         })
 
         const data = await res.json()

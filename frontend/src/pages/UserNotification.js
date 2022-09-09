@@ -60,19 +60,21 @@ const UserNotification = () => {
     return (
         <div className="ui inverted segment">
             <h1>Notifications</h1>
-            <div className="ui relaxed divided inverted selection list">
+            <div className="ui large relaxed divided inverted selection list">
             {notification && notification.map((notification) => (
                 <div className="item" key={notification._id} onClick={()=>markAsRead(notification)} >
-                    <Link className="ui small image" to={`/pages/${media}/${notification._id}`}>
                     <i className= {
                         notification.read?
                         'large bell red outline middle aligned icon'
                         :'large red bell middle aligned icon'} ></i>
-                    <div className="content">
+                        <div className="content">
+                    <Link className="header" to={`/pages/${media}/${notification._id}`}>
+                    
                     <div className="header">{notification.notification.title}</div>
                     <div className="description"><TimeAgo date={notification.notification.createdAt} /></div>
-                    </div>
+                    
                     </Link>
+                    </div>
                     </div>
             ))}
         </div>

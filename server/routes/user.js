@@ -9,7 +9,8 @@ const {
         getUserNotification,
         getAllUsers,
         setUserStatus,
-        getUserById
+        getUserById,
+        sendEmailNotification
         } = require('../controllers/userController')
 
 const requireAuth = require('../middleware/requireAuth')
@@ -46,5 +47,8 @@ router.get('/:id', getUserById)
 
 //set user's status
 router.post('/status', setUserStatus)
+
+//send mail to user
+router.post('/email', sendEmailNotification)
 
 module.exports = router

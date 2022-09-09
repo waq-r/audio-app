@@ -78,7 +78,7 @@ const Audio = ()=>{
         //upload video to dir
         const formData = new FormData()
 
-        const fileName = json._id+'.'+e.target.videoFile.files[0].type.split('/')[1] || 'mp4'
+        const fileName = json._id+'.'+e.target.videoFile.files[0].type.split('/')[1] || 'mp3'
         
         formData.append('sampleFile', e.target.videoFile.files[0], fileName)
 
@@ -108,7 +108,7 @@ const Audio = ()=>{
             "authorization": "Bearer "+user.token
           },
           body: JSON.stringify({
-            "title": "Video response for: " + audio.title,
+            "title": `${user.name} uploaded response to the audio: "${audio.title}"`,
             "link": fileName,
             "forWhom": "admin"
           }),
@@ -174,11 +174,40 @@ const Audio = ()=>{
 
     })
 
+    // send email notification to admin
+            //get name and email from admins array
+        const sendTo = admins.map(admin => {
+            return {
+                Name: admin.name,
+                Email: admin.email
+            }
+        })
+            const emailRes = await fetch('/api/user/email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({
+                    "To": sendTo,
+                    "Subject": `[hiVO] ${user.name} sent you an audio`,
+                    "TextPart": `${user.name} has uploaded audio in response to the audio: "${audio.title}.`,
+                    "HTMLPart": `${user.name} has uploaded audio in response to the audio: <b> ${audio.title} </b>. <br> <br>${audio.description} <br><br> <a href='https://hivo.online/'>Click here to login and download the file</a>`
+                }),
+            })
+
+            const emailJson = await emailRes.json()
+
+            if (!emailRes.ok) {
+                console.log("error", emailJson.msg);
+            }
+        
+        }
 
 
 
 
-    }
+    
 
     useEffect(() => {
         const getAudio = async () => {

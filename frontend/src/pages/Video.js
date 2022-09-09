@@ -62,7 +62,7 @@ const Video = () => {
             <div className="ui fluid inverted card">
             <div className="content inverted">
             <div className="header">
-                    {video.user.name}
+                    {video.notification.title.split(' ')[0]}
                 </div>
                 <div className="meta">
                     <span className="date">Shared </span>

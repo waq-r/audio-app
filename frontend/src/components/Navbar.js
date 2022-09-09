@@ -13,9 +13,8 @@ const Navbar = () => {
     }
 
     return (
-        <div className="ui inverted menu">
-        <div className="header item">HIVO ONLINE</div>
-            <Link className="item" to="/">Home</Link>
+        <div className="ui huge inverted menu">
+            <Link className="header item" to="/">HIVO ONLINE</Link>
             {user && user.role === 'admin' && (
             <Link className="item" to="/pages/users">Users</Link>
             )}

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { useParams } from "react-router-dom";
 import {useAuthContext} from '../hooks/useAuthContext'
+import { Navigate } from "react-router-dom";
 import DownloadButton from "../components/DownloadButton";
 import DownloadZip from "../components/DownloadZip";
 
@@ -50,6 +51,9 @@ const Recordings = () => {
     
 
     useEffect(() => {
+        if(user && user.role !== 'admin') {
+            return <Navigate to="/login" />
+        }
         //get user details from database using id
         fetch(`/api/user/${id}`,
             {

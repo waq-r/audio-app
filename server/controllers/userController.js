@@ -1,3 +1,4 @@
+require('dotenv').config()
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 
@@ -117,6 +118,77 @@ const getUserById = async (req, res) => {
     }
 }
 
+// send email to user
+const verifyUserEmail = async (req, res) => {
+    const { email } = req.body
+
+    try {
+        const user = await User.findOne({ email })
+        const token = createToken(user._id)
+        const url = `http://localhost:3000/api/user/verify/${token}`
+
+        const message = {
+            from: 'XXXXXXXXXXXXXXXXXX',
+            to: email,
+            subject: 'Verify your email',
+            html: `
+                <h1>Verify your email</h1>
+                <p>Please click the link below to verify your email</p>
+                <a href=${url}>${url}</a>
+            `
+        }
+
+        await user.updateOne({ email }, { emailToken: token })
+
+        await transporter.sendMail(message)
+
+        res.status(200).json({ msg: "Email sent" })
+    }
+    catch (err) {
+        res.status(400).json({ error: err.message })
+        console.log(err)
+    }
+
+}
+
+// MailJet send notification to user's email
+const sendEmailNotification = async (req, res) => {
+
+    const { To, Subject, TextPart, HTMLPart } = req.body
+
+    const mailjet = require('node-mailjet')
+    
+	.apiConnect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET)
+
+    const request = mailjet
+	.post("send", {'version': 'v3.1'})
+	.request({
+		"Messages":[
+				{
+						"From": {
+                                "Email": process.env.EMAIL,
+								"Name": process.env.NAME
+						},
+						"To": To,
+						"Subject": Subject,
+						"TextPart": TextPart,
+						"HTMLPart": HTMLPart
+				}
+		]
+	})
+request
+	.then((result) => {
+        res.status(200).json({ msg: "Email sent" })
+	})
+	.catch((err) => {
+		console.log(err.statusCode)
+        res.status(400).json({ error: err.message })
+	})
+    
+    
+}
+
+
 
 
 
@@ -128,5 +200,6 @@ module.exports = {
                     getUserNotification,
                     getAllUsers,
                     setUserStatus,
-                    getUserById
+                    getUserById,
+                    sendEmailNotification
                   }

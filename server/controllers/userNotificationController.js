@@ -31,8 +31,6 @@ const getAllUserNotifications = async (req, res) => {
 //update notification
 const markNotificationAsRead = async (req, res) => {
     const {id} = req.params
-    console.log(req.body)
-
     try {
     const userNotification = await UserNotification.findByIdAndUpdate(id, req.body, {new: true})
     res.status(200).json(userNotification)

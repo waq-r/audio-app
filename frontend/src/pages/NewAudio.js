@@ -14,7 +14,7 @@ const NewAudio = () => {
     const description = useRef(null); //Ref for textarea
     const title = useRef(null); //Ref for textarea
 
-    if(user && user.role !== 'admin') {
+    if(!user || (user && user.role !== 'admin')) {
         return <Navigate to="/login" />
     }
    

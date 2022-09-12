@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import parse from 'html-react-parser';
 import {useAuthContext} from '../hooks/useAuthContext'
+import TimeAgo from 'react-timeago'
 
 
 
-const Audio = ()=>{
+
+const AudioOld = ()=>{
 
     const {id} = useParams() //userNotification Id
 
     const [userNotification, setuserNotification] = useState(null)
 
+    const [selectedFile, setselectedFile] = useState('')
 
-    const [audio, setAudio] = useState(null)
+    const [video, setVideo] = useState(null)
 
     const [formClass, setFormClass] = useState('hidden')
 
@@ -45,7 +48,7 @@ const Audio = ()=>{
             },
             body: JSON.stringify({
                 "video": e.target.videoFile.files[0].name,
-                "audioId": audio._id,
+                "audioId": userNotification.audioId._id,
                 "userId": user._id,
                 "downloaded": false
             }),
@@ -93,7 +96,7 @@ const Audio = ()=>{
 
         if(res.ok) {
             setFormClass('disabled')
-            setMessage({className: 'positive', content: 'File uploaded successfully'})
+            setMessage({className: 'positive', content: 'Voiceover submitted'})
         }
         if(!res.ok) {
             setFormClass('')
@@ -108,7 +111,7 @@ const Audio = ()=>{
             "authorization": "Bearer "+user.token
           },
           body: JSON.stringify({
-            "title": `${user.name} uploaded response to the audio: "${audio.title}"`,
+            "title": `${user.name} uploaded response to the audio: "${userNotification.audioId.title}"`,
             "link": fileName,
             "forWhom": "admin"
           }),
@@ -157,7 +160,7 @@ const Audio = ()=>{
             body: JSON.stringify({
                 "user": admin._id,
                 "notification": notificationJson._id,
-                "audioId":audio._id,
+                "audioId":userNotification.audioId._id,
                 "videoId": json._id,
                 "read": false
             }),
@@ -191,8 +194,8 @@ const Audio = ()=>{
                 body: JSON.stringify({
                     "To": sendTo,
                     "Subject": `[hiVO] ${user.name} sent you an audio`,
-                    "TextPart": `${user.name} has uploaded audio in response to the audio: "${audio.title}.`,
-                    "HTMLPart": `${user.name} has uploaded audio in response to the audio: <b> ${audio.title} </b>. <br> <br>${audio.description} <br><br> <a href='https://hivo.online/'>Click here to login and download the file</a>`
+                    "TextPart": `${user.name} has uploaded audio in response to the audio: "${userNotification.audioId.title}.`,
+                    "HTMLPart": `${user.name} has uploaded audio in response to the audio: <b> ${userNotification.audioId.title} </b>. <br> <br>${userNotification.audioId.description} <br><br> <a href='https://hivo.online/'>Click here to login and download the file</a>`
                 }),
             })
 
@@ -200,6 +203,10 @@ const Audio = ()=>{
 
             if (!emailRes.ok) {
                 console.log("error", emailJson.msg);
+            }
+
+            if(json && !userNotification.videoId){
+                setVideo({_id:json._id, video:json.video})
             }
         
         }
@@ -227,74 +234,115 @@ const Audio = ()=>{
                     console.log('get user notification details not ok', UserNotificationDetailsData.error)
                     
                 }
-                const audioId = UserNotificationDetailsData.notification.link.split('.')[0]
+                //const audioId = UserNotificationDetailsData.notification.link.split('.')[0]
 
         //get audio from api
-        const response = await fetch(`/api/audio/${audioId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.token}`
-            },
-        })
+        // const response = await fetch(`/api/audio/${audioId}`, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': `Bearer ${user.token}`
+        //     },
+        // })
 
-        const json = await response.json()
-        setAudio(json.audio)
+        // const json = await response.json()
+    
         setuserNotification(UserNotificationDetailsData)
+        //setAudio(userNotification.audioId)
 
 }
+if(user){
 getAudio()
+}
+
 // eslint-disable-next-line
-    }, [user])
+    }, [])
 
 
 
     return (
     <div className="ui inverted segment">
-        <div className="header">
-            {audio && audio.title}
-        </div>
-        <div className="ui segments">
-        <div className="ui segment">
-            <div>{audio && parse(audio.description)}</div>
-        </div>
-        <div className="ui secondary inverted segment">
-            <audio controls src={audio && `/api/file/audio/${userNotification.notification.link}`} type={audio && audio.audio}></audio>
-            {userNotification && userNotification.videoId
-            ?
-            <div className="ui inverted segment">
-                <div className="header"><h3>Your response</h3></div>
-                <audio controls 
-                src={audio && `/api/file/video/${userNotification.videoId._id}.${userNotification.videoId.video.split('.').pop()}`} 
-                type={`audio/${userNotification.videoId.video.split('.').pop()}`}>
-                </audio>
-            </div>
-            :
-            <div className="ui inverted container segment">
-                <div className="header"><h3>Upload your response</h3></div>
 
-            <form onSubmit={submitHandler} className ={`ui inverted form ${formClass}`}>
-                <input className={`fluid inverted secondary ui button ${formClass}`}
-                    type="file"
-                    name='videoFile'
-                    accept="audio/wav,audio/mp3,audio/mp4,audio/ogg,audio/webm"
-                />
-                <button className={`ui segment big button ${formClass}`} >Submit video</button>
-            </form>
+        <div className="ui two column stackable center aligned grid">
+            <div className="middle inverted aligned row">
+                {userNotification &&
+                    <div className="column">
+                        <div className="ui left aligned inverted header">
+                            {userNotification.audioId?.title}
+                            <div className="sub header">
+                                Sent <TimeAgo date={userNotification.audioId?.date} />
+                            </div>
+                        </div>
 
-        {message && <div className={`ui ${message.className} message`} >
-        <div className="header">
-            </div>
-            <p>{message.content}</p>
-            </div>
-            }
+                        <div className="segment">
+                            <audio controls 
+                                    src={`/api/file/audio/${userNotification.notification?.link}`} 
+                                    type={userNotification.audioId?.audio}>
+                            </audio> 
+                        </div>
+                    </div>
+                }
+                <div className="ui vertical divider"></div>
+                <div className="column">
+                {userNotification && parse(userNotification.audioId.description)}
+                </div>
 
       </div>
-        }
+      <div className="ui horizontal divider"></div>
+      <div className="middle aligned row">
+        <div className="column">
+            {userNotification && !userNotification.videoId && !video &&
+                <div className="inverted segment">
+                    <div className="header"><h3>Upload VoiceOver</h3></div>
+
+                <form onSubmit={submitHandler} className ={`ui inverted form ${formClass}`}>
+                    <label className={`fluid inverted ui button ${formClass}`}>
+                        <i className="upload icon"></i>Upload 
+                    <input style={{display: 'none'}}
+                        onChange={(event) => { 
+                            setselectedFile(event.target.files[0].name)
+                        }}
+                        type="file"
+                        name='videoFile'
+                        accept="audio/wav,audio/mp3,audio/ogg,audio/webm"
+                    />
+                    {` ${selectedFile}`}
+                    </label>
+                    <button className={`ui segment big button ${formClass}`} >Submit</button>
+                </form>
+
+                </div>
+            }
+
+            {userNotification && (userNotification.videoId || video) &&
+                <div className="ui inverted segment">
+                    <div className="header"><h3>Your VoiceOver</h3></div>
+                    {userNotification.videoId &&
+                        <audio controls 
+                        src={`/api/file/video/${userNotification.videoId._id}.${userNotification.videoId.video.split('.').pop()}`} 
+                        type={`audio/${userNotification.videoId.video.split('.').pop()}`}>
+                        </audio>
+                    }
+                    {video &&
+                        <audio controls 
+                        src={`/api/file/video/${video._id}.${video.video.split('.').pop()}`} 
+                        type={`audio/${video.video.split('.').pop()}`}>
+                        </audio>
+                    }
+                </div>
+            }
+
+            {message && 
+                <div className={`ui ${message.className} message`} >
+                    <p>{message.content}</p>
+                </div>
+            }
         </div>
-        </div>
+      </div>
+      </div>
+
     </div>
     )
 }
 
-export default Audio
+export default AudioOld

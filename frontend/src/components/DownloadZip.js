@@ -15,13 +15,9 @@ const DownloadZip = ({audio, url, recordId, markAsDownloaded}) => {
 
         // fetch file from server into a blob to download and save locally
         const download = async () => {
-            console.log('Downloading: ', url)
+            //console.log('Downloading: ', url)
             const response = await fetch(url)
             const blob = await response.blob()
-            // const link = document.createElement('a')
-            // link.href = window.URL.createObjectURL(blob)
-            // link.download = slug(audio.title) + '.' + audio.audio.split('/').pop()
-            // link.click()
             const zip = new JSZip();
             const dir = zip.folder(name)
 

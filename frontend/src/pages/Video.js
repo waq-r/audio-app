@@ -4,6 +4,8 @@ import TimeAgo from 'react-timeago'
 import {useAuthContext} from '../hooks/useAuthContext'
 import DownloadButton from "../components/DownloadButton";
 import DownloadZip from "../components/DownloadZip";
+import parse from 'html-react-parser';
+
 
 
 const Video = () => {
@@ -58,38 +60,66 @@ const Video = () => {
     
     return (
         <div className="ui inverted segment container">
-            {video && (
-            <div className="ui fluid inverted card">
-            <div className="content inverted">
-            <div className="header">
-                    {video.notification.title.split(' ')[0]}
+
+<div className="ui placeholder inverted segment">
+  <div className="ui two column stackable center aligned grid">
+    <div className="ui vertical divider"></div>
+    <div className="middle aligned row">
+      <div className="column">
+        {video &&
+        <div className="ui left aligned inverted header">
+            {video.notification.title.split(' ')[0]}
+                <div className="sub header">
+                        Shared <TimeAgo date={video.videoId.date} />
                 </div>
-                <div className="meta">
-                    <span className="date">Shared </span>
-                    <TimeAgo date={video.videoId.date} />
-                </div>
-                <audio controls src={`/api/file/video/${video.notification.link}`} type={`audio/${video.notification.link.split('.').pop()}}}`} >
-                </audio>
             </div>
-            <div className="content grey">
-                <div className="header">
-                    <DownloadButton
+        }
+            
+            <div className="segment">
+                {video &&
+                    <audio controls 
+                            src={`/api/file/video/${video.notification.link}`} 
+                            type={`audio/${video.notification.link.split('.').pop()}}}`} >
+                    </audio>
+                }
+            <div className="ui horizontol divider"></div>
+            {video &&
+                <div className="ui left floated two column grid">
+                    <div className="column">
+                        <DownloadButton
+                                recordId={video.videoId._id}
+                                audio={video.audioId}
+                                url={`/api/file/video/${video.videoId._id+'.'+video.videoId.video.split('.').pop()}`}
+                                markAsDownloaded={markAsDownloaded}
+                                />
+                        </div>
+                        <div className="column">
+                        <DownloadZip
                             recordId={video.videoId._id}
                             audio={video.audioId}
                             url={`/api/file/video/${video.videoId._id+'.'+video.videoId.video.split('.').pop()}`}
                             markAsDownloaded={markAsDownloaded}
                             />
+                        </div>
+                </div>
+            }
+            </div>
+        
+      </div>
+      <div className="column">
+        <div className="ui inverted header">
+        {video && video.audioId.title}
+        </div>
+        <div className="ui content">
+            <div className="ui large image">
+            {video && parse(video.audioId.description)}
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-                    <DownloadZip
-                        recordId={video.videoId._id}
-                        audio={video.audioId}
-                        url={`/api/file/video/${video.videoId._id+'.'+video.videoId.video.split('.').pop()}`}
-                        markAsDownloaded={markAsDownloaded}
-                        />
-                    </div>
-            </div>
-            </div>
-            )}
         </div>
     )
 }

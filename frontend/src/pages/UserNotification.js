@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import TimeAgo from 'react-timeago'
 import {useAuthContext} from '../hooks/useAuthContext'
 
@@ -12,6 +12,10 @@ const UserNotification = () => {
     const media = user.role === 'admin' ? 'video' : 'audio'
 
     useEffect(() => {
+        if(!user) {
+            return <Navigate to="/login" />
+        }
+
         const getNotification = async () => {
             const res = await fetch('/api/usernotification/'+user._id, {
                 method: 'GET',

@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {useAuthContext} from '../hooks/useAuthContext'
-import { Navigate } from "react-router-dom";
 import DownloadButton from "../components/DownloadButton";
 import DownloadZip from "../components/DownloadZip";
+import parse from 'html-react-parser';
+
 
 
 const Recordings = () => {
+    const navigate = useNavigate()
 
     const { id } = useParams();
     const [recordings, setRecordings] = useState(null);
@@ -51,9 +53,13 @@ const Recordings = () => {
     
 
     useEffect(() => {
-        if(user && user.role !== 'admin') {
-            return <Navigate to="/login" />
+        if(!user || (user && user.role !== 'admin' && user?._id !== id)) {
+            navigate('/')
         }
+        
+    
+      //get all user video recordings
+      const getRecordings = async () => {
         //get user details from database using id
         fetch(`/api/user/${id}`,
             {
@@ -68,10 +74,8 @@ const Recordings = () => {
                 setName(data)
             }
         )
-        
-    
-      //get all user video recordings
-      const getRecordings = async () => {
+
+        //get usernotification
         const response = await fetch(`/api/usernotification/stats/${id}`, {
             method: 'GET',
             headers: {
@@ -85,9 +89,11 @@ const Recordings = () => {
 
       }
 
-      getRecordings()    
+        if (user) {
+      getRecordings()
+        }
 
-    }, [user])
+    }, [])
 
     return (
         <div className="ui segment inverted">
@@ -96,6 +102,7 @@ const Recordings = () => {
                 {name && `${name.name}` }
             </h1>
 
+            {user && user.role === 'admin' &&
             <table className="ui celled table inverted">
             <thead>
                 <tr>
@@ -103,6 +110,7 @@ const Recordings = () => {
                 <th>Notification</th>
                 <th>Reply</th>
                 <th>Download</th>
+                <th>Script</th>
                 </tr>
             </thead>
             <tbody>
@@ -116,7 +124,7 @@ const Recordings = () => {
                 <td className={`${record.videoId?'positive':'negative'}`}>
                     {`${record.videoId?'File uploaded':'File not uploaded'}`}
                 </td>
-                {record.videoId?
+                {record.videoId &&
                     <td className={`${record.videoId.downloaded?'positive':'negative'}`}>
                         <DownloadButton
                             recordId={record._id}
@@ -134,12 +142,47 @@ const Recordings = () => {
 
                         {`${record.videoId.downloaded?' File downloaded':' File not downloaded'}`}
                     </td>
-                    :<td></td>
                 }
+                {!record.videoId &&
+                    <td></td>
+                }
+
+                <td>{parse(record.audioId.description)}</td>
                 </tr>
                 ))}
             </tbody>
             </table>
+            }
+
+            {user && user.role === 'user' &&
+            <div className="ui four column grid">
+            <div className="four column row">
+              <div className="column">Title</div>
+              <div className="column">Script</div>
+              <div className="column">Voiceover</div>
+              <div className="column">Downloaded by admin</div>
+            </div>
+            {recordings && recordings.map(record=>(
+            <div className="four column row" key={record._id}>
+                <div className="column">
+                    <Link to={`/pages/audio/${record._id}`}>{record.audioId.title}</Link>
+                </div>
+                <div className="column">{parse(record.audioId.description)}</div>
+                <div className="column" >
+                    <i className={`icon ${record.videoId ? 'green checkmark' : 'red close'}`}>
+                        {`${record.videoId ? ' Uploaded' : ' Not uploaded'}`}
+                    </i>
+                </div>
+                <div className="column">
+                    {record.videoId &&
+                        <i className={`icon ${record.videoId.downloaded ? 'checkmark' : 'close'}`}></i>
+                    }
+                </div>
+            </div>
+            )
+            )}
+          </div>
+            }
         </div>
     )
     

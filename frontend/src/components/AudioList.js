@@ -184,6 +184,7 @@ const AudioList = ({ audioList, onDelete }) => {
               }
         
         setMessage(resultMsg)
+        setButtonClass('primary')
 
         //on susccess, delete audio from list
         const sucess = Object.values(resultMsg).filter(msg => msg === true)
@@ -194,10 +195,6 @@ const AudioList = ({ audioList, onDelete }) => {
         if(sucess.length >= 4) {
           onDelete(audio)
         }
-        else{
-          setButtonClass('primary')
-        }
-
 
         
 }

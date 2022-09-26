@@ -28,7 +28,7 @@ const saveAudio = async (req, res) => {
     const {audio, title, description} = req.body
     try {
         const newAudio = await Audio.create({audio, title, description})
-        res.status(200).json({newAudio})
+        res.status(200).json(newAudio)
     }
     catch (err) {
         res.status(400).json({error: err.message})

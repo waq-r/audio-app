@@ -44,7 +44,7 @@ const AudioList = ({ audioList, onDelete }) => {
     setButtonClass('loading disabled')
 
     //save audio to database
-    const response = await fetch("/api/audio/save", {
+    const response = await fetch("/api/audio", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,9 +62,9 @@ const AudioList = ({ audioList, onDelete }) => {
       if(!response.ok) {
       }
       if(response.ok) {
-        audioId = json.newAudio._id;
+        audioId = json._id;
         resultMsg.idGenerated = true
-        resultMsg.title = json.newAudio.title
+        resultMsg.title = json.title
       }
 // save file to dir, _id as name
     const blob = await fetch(audio.blobURL)
@@ -123,7 +123,7 @@ const AudioList = ({ audioList, onDelete }) => {
         const selectedUsersIds = userToSend.map(usr => usr._id)
 
         //forEach needs to run async
-        selectedUsersIds.forEach(async (id) => {
+        //selectedUsersIds.forEach(async (id) => {
 
           const userRes = await fetch("/api/usernotification", {
           method: "POST",
@@ -133,7 +133,8 @@ const AudioList = ({ audioList, onDelete }) => {
           },
           body: JSON.stringify({
             "notification": notificationId,
-            "user": id,
+            "users": selectedUsersIds,
+            "userType": "user",
             "audioId": audioId,
             "videoId": null,
             "read": false
@@ -147,9 +148,9 @@ const AudioList = ({ audioList, onDelete }) => {
         }
         if(userRes.ok) {
           resultMsg.userNotified = true
-          resultMsg.modifiedCount++
+          resultMsg.modifiedCount = selectedUsersIds.length
         }
-    })
+    //})
 
         // send email notification to admin
             //get name and email from userToSend array

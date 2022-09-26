@@ -17,7 +17,7 @@ router.get('/:id', getAudio)
 router.get('/', getAllAudios)
 
 // save an audio route
-router.post('/save', saveAudio)
+router.post('/', saveAudio)
 
 // delete an audio route
 router.delete('/:id', deleteAudio)

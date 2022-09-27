@@ -5,6 +5,8 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import AudioList from "../components/AudioList";
 import {useAuthContext} from '../hooks/useAuthContext'
 import { Navigate } from "react-router-dom";
+import TextFileUpload from "../components/TextFileUpload";
+import AudioFileUpload from "../components/AudioFileUpload";
 
 
 const NewAudio = () => {
@@ -13,10 +15,12 @@ const NewAudio = () => {
     const [audioList, setAudioList] = useState([]); //Array of audios
     const description = useRef(null); //Ref for textarea
     const title = useRef(null); //Ref for textarea
+    const [descriptionData, setDescriptionData] = useState("<br />")
 
     if(!user || (user && user.role !== 'admin')) {
         return <Navigate to="/login" />
     }
+        
    
     const addAudio = (audio) => {
         setAudioList([
@@ -26,6 +30,7 @@ const NewAudio = () => {
                 blobURL: audio.audioSrc,
                 title: title.current.value || "Untitled",
                 description: description.current.editor.getData() || "No notes",
+                file: audio.file || null,
             },  ...audioList ]);
 
     }
@@ -48,9 +53,21 @@ const NewAudio = () => {
             <CKEditor
                     ref={description}
                     editor={ ClassicEditor }
-                    data="<br />"
+                    data= {descriptionData}
                 />
             </div>
+            
+            <div className="ui two column stackable center aligned grid">
+                <div className="middle aligned row">
+                    <div className="column">
+                        <TextFileUpload setDescriptionData={setDescriptionData} />
+                    </div>
+                    <div className="column">
+                        <AudioFileUpload addAudio={addAudio} />
+                    </div>
+                </div>
+            </div>
+
             <div className="ui inverted segment center aligned">
             <RecordAudio addAudio={addAudio} />
             </div>

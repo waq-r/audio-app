@@ -149,7 +149,7 @@ const AudioOld = ()=>{
 
         //add notification to all admins in database
 
-        admins.forEach(async (admin) => {
+        //admins.forEach(async (admin) => {
 
         const adminNotificationRes = await fetch("/api/usernotification", {
             method: "POST",
@@ -158,7 +158,8 @@ const AudioOld = ()=>{
             "authorization": "Bearer "+user.token
             },
             body: JSON.stringify({
-                "user": admin._id,
+                "users": [],
+                "userType": "admin",
                 "notification": notificationJson._id,
                 "audioId":userNotification.audioId._id,
                 "videoId": json._id,
@@ -175,7 +176,7 @@ const AudioOld = ()=>{
             //console.log("add notification to admin ok ", adminNotificationJson);
         }
 
-    })
+    //})
 
     // send email notification to admin
             //get name and email from admins array

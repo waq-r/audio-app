@@ -2,23 +2,28 @@ const mongoose = require('mongoose')
 const UserNotification = require('../models/userNotificationModel')
 const User = require('../models/userModel')
 const Audio = require('../models/audioModel')
+const Notification = require('../models/notificationModel')
 
 //save notification
 const addUserNotification = async (req, res) => {
-    let {users, userType, notification, audioId, videoId} = req.body
+    let {users, userType, title, link, audioId, videoId} = req.body
+
+    //create a notification using Notification create
+    const notification = await Notification.create({title, link})
+    if (!notification) return res.status(400).json({ msg: "Failed to create notification" })
+    
+
     if(!users || users.length === 0){
     // get Users where user.role is admin/user
         users = await User.find({ role: userType }, '_id').exec()
         users = users.map(user => user._id.toHexString())
-        //console.log('users: ', users)
-        //res.status(200).json(users)
     }
 
     // add notification._id, read and audio._id to users array
     const notifications = users.map(usr => {
         return {
             user: usr,
-            notification: notification,
+            notification: notification._id,
             read: false,
             audioId: audioId || null,
             videoId: videoId || null

@@ -4,9 +4,6 @@ import parse from 'html-react-parser';
 import {useAuthContext} from '../hooks/useAuthContext'
 import TimeAgo from 'react-timeago'
 
-
-
-
 const AudioOld = ()=>{
 
     const {id} = useParams() //userNotification Id
@@ -101,26 +98,6 @@ const AudioOld = ()=>{
             setMessage({className: 'negative', content: data.error})
         }
 
-        //add notification in database
-        const notificationRes = await fetch("/api/notification/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "authorization": "Bearer "+user.token
-          },
-          body: JSON.stringify({
-            "title": `${user.name} uploaded response to the audio: "${userNotification.audioId.title}"`,
-            "link": fileName,
-            "forWhom": "admin"
-          }),
-        })
-
-        const notificationJson = await notificationRes.json()
-        
-        if(!notificationRes.ok) {
-          console.log("add notification not ok ", notificationJson.error);
-        }
-
         //get all admins
         const adminRes = await fetch("/api/user", {
             method: "POST",
@@ -148,9 +125,10 @@ const AudioOld = ()=>{
             "authorization": "Bearer "+user.token
             },
             body: JSON.stringify({
+                "title": `${user.name} uploaded response to the audio: "${userNotification.audioId.title}"`,
+                "link": fileName,
                 "users": [],
                 "userType": "admin",
-                "notification": notificationJson._id,
                 "audioId":userNotification.audioId._id,
                 "videoId": json._id,
                 "read": false
@@ -198,7 +176,6 @@ const AudioOld = ()=>{
         
         }
     
-
     useEffect(() => {
         const getAudio = async () => {
         
@@ -218,7 +195,6 @@ const AudioOld = ()=>{
                     
                 }
                 
-    
         setuserNotification(UserNotificationDetailsData)
 
 }
@@ -228,8 +204,6 @@ getAudio()
 
 // eslint-disable-next-line
     }, [])
-
-
 
     return (
     <div className="ui inverted segment">

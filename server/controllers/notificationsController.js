@@ -14,18 +14,6 @@ const addNotification = async (req, res) => {
 
 }
 
-const getAllNotifications = async (req, res) => {
-    const {forWhom} = req.body
-    
-    const notifications = await Notification.find({forWhom}).sort({createdAt: -1})
-
-    if(!notifications) {
-        return res.status(404).send('No notifications')
-    }
-
-    res.status(200).json({notifications})
-}
-
 const getNotification = async (req, res) => {
     const {id} = req.params
     if(!mongoose.Types.ObjectId.isValid(id)) {
@@ -42,4 +30,4 @@ const getNotification = async (req, res) => {
 }
 
 
-module.exports = {addNotification, getAllNotifications, getNotification}
+module.exports = {addNotification, getNotification}

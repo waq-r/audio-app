@@ -8,11 +8,6 @@ const notificationSchema = new Schema({
         required: true,
         trim: true
     },
-    forWhom: {
-        type: String,
-        required: true,
-        enum: ['user', 'admin'],
-    },
     link: {
         type: String,
         required: true

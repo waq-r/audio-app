@@ -20,31 +20,31 @@ const AudioList = ({ audioList, onDelete, onSelect, deleteSelectedAudios }) => {
 
   const notifyAudio = async (audio) => {
 
-    let notificationId;
+    //let notificationId;
     setButtonClass('loading disabled')
 
         //add notification in database
-        const notificationRes = await fetch("/api/notification/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "authorization": "Bearer "+user.token
-          },
-          body: JSON.stringify({
-            "title": `${user.name} sent you a new audio: "${audio.title}"`,
-            "link": `${audio._id}.${audio.blobType.split('/')[1]}`,
-            "forWhom": "user"
-          }),
-        })
+        // const notificationRes = await fetch("/api/notification/add", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "authorization": "Bearer "+user.token
+        //   },
+        //   body: JSON.stringify({
+        //     "title": `${user.name} sent you a new audio: "${audio.title}"`,
+        //     "link": `${audio._id}.${audio.blobType.split('/')[1]}`,
+        //     "forWhom": "user"
+        //   }),
+        // })
 
-        const notificationJson = await notificationRes.json()
+        // const notificationJson = await notificationRes.json()
         
-        if(!notificationRes.ok) {
-          console.log("add notification not ok ", notificationJson.error);
-        }
-        if(notificationRes.ok) {
-          notificationId = notificationJson._id
-        }
+        // if(!notificationRes.ok) {
+        //   console.log("add notification not ok ", notificationJson.error);
+        // }
+        // if(notificationRes.ok) {
+        //   notificationId = notificationJson._id
+        // }
 
         // add notification to selected users
 
@@ -57,7 +57,8 @@ const AudioList = ({ audioList, onDelete, onSelect, deleteSelectedAudios }) => {
             "authorization": "Bearer "+user.token
           },
           body: JSON.stringify({
-            "notification": notificationId,
+            "title": `${user.name} sent you a new audio: "${audio.title}"`,
+            "link": `${audio._id}.${audio.blobType.split('/')[1]}`,
             "users": selectedUsersIds,
             "userType": "user",
             "audioId": audio._id,

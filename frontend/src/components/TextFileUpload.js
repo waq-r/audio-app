@@ -9,7 +9,6 @@ const TextFileUpload = ({ setDescriptionData }) => {
         setSelectedFile(file.name)
         const reader = new FileReader();
         reader.onload = (e) => {
-            console.log(e.target.result)
             setDescriptionData(e.target.result.replace(/(\r\n|\n|\r)/gm, "<br>"));
         };
         reader.readAsText(file);

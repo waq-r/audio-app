@@ -4,7 +4,6 @@ const Notification = require('../models/notificationModel')
 //save notification
 const addNotification = async (req, res) => {
     const {title, forWhom, link} = req.body
-
     try {
     const notification  = await Notification.create({title, forWhom, link})
     res.status(201).json(notification)

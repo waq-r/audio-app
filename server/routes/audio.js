@@ -1,7 +1,7 @@
 const express = require('express')
 
 // controller functions
-const { getAudio, getAllAudios, saveAudio, deleteAudio } = require('../controllers/audioController')
+const { getAudio, getAllAudios, saveAudio, deleteAudio, saveAudioAndFile } = require('../controllers/audioController')
 
 const requireAuth = require('../middleware/requireAuth')
 
@@ -19,8 +19,11 @@ router.get('/', getAllAudios)
 // save an audio route
 router.post('/', saveAudio)
 
+// save audio and file route
+router.post('/draft', saveAudioAndFile)
+
 // delete an audio route
-router.delete('/:id', deleteAudio)
+router.delete('/:id/:type', deleteAudio)
 
 module.exports = router
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const UserNotification = require('../models/userNotificationModel')
 const User = require('../models/userModel')
+const Audio = require('../models/audioModel')
 
 //save notification
 const addUserNotification = async (req, res) => {
@@ -28,6 +29,11 @@ const addUserNotification = async (req, res) => {
     // insert many notifications to user notification collection in mongo db
     try{
     const userNotifications = await UserNotification.insertMany(notifications)
+    // Mark audio.draft to false
+        if (audioId) {
+            await Audio.findByIdAndUpdate(audioId, { draft: false })
+        }
+        
     res.status(200).json(userNotifications)
     }
     catch (err) {

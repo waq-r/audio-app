@@ -15,6 +15,11 @@ const audioSchema = new Schema({
         type: String,
         required: true
     },
+    draft: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     date: {
         type: Date,
         required: true,

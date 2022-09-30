@@ -37,8 +37,6 @@ const AudioOld = ()=>{
             
         }
 
-
-
         //add video to db
         const respose = await fetch('/api/video/add', {
             method: 'POST',
@@ -122,9 +120,6 @@ const AudioOld = ()=>{
         if(!notificationRes.ok) {
           console.log("add notification not ok ", notificationJson.error);
         }
-        if(notificationRes.ok) {
-          //console.log("add notification ok ", notificationJson._id);
-        }
 
         //get all admins
         const adminRes = await fetch("/api/user", {
@@ -143,13 +138,8 @@ const AudioOld = ()=>{
         if(!adminRes.ok) {
             console.log("get admin id not ok ", admins.error);
         }
-        if(adminRes.ok) {
-            //console.log("get admin id ok ", admins);
-        }
 
         //add notification to all admins in database
-
-        //admins.forEach(async (admin) => {
 
         const adminNotificationRes = await fetch("/api/usernotification", {
             method: "POST",
@@ -172,11 +162,7 @@ const AudioOld = ()=>{
         if(!adminNotificationRes.ok) {
             console.log("add notification to admin not ok ", adminNotificationJson.error);
         }
-        if(adminNotificationRes.ok) {
-            //console.log("add notification to admin ok ", adminNotificationJson);
-        }
 
-    //})
 
     // send email notification to admin
             //get name and email from admins array
@@ -211,10 +197,6 @@ const AudioOld = ()=>{
             }
         
         }
-
-
-
-
     
 
     useEffect(() => {
@@ -235,21 +217,9 @@ const AudioOld = ()=>{
                     console.log('get user notification details not ok', UserNotificationDetailsData.error)
                     
                 }
-                //const audioId = UserNotificationDetailsData.notification.link.split('.')[0]
-
-        //get audio from api
-        // const response = await fetch(`/api/audio/${audioId}`, {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': `Bearer ${user.token}`
-        //     },
-        // })
-
-        // const json = await response.json()
+                
     
         setuserNotification(UserNotificationDetailsData)
-        //setAudio(userNotification.audioId)
 
 }
 if(user){
@@ -296,8 +266,8 @@ getAudio()
                 <div className="inverted segment">
                     <div className="header"><h3>Upload VoiceOver</h3></div>
 
-                <form onSubmit={submitHandler} className ={`ui inverted form ${formClass}`}>
-                    <label className={`fluid inverted ui button ${formClass}`}>
+                <form onSubmit={submitHandler} className ={`ui inverted form`}>
+                    <label className={`fluid inverted ui button`}>
                         <i className="upload icon"></i>Upload 
                     <input style={{display: 'none'}}
                         onChange={(event) => { 

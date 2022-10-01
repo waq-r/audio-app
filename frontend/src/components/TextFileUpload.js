@@ -19,7 +19,7 @@ const TextFileUpload = ({ setDescriptionData }) => {
             <i className="upload icon"></i>Upload Text File
                     <input style={{display: 'none'}}
                     type="file"
-                    accept=".txt"
+                    accept="text/*"
                     onChange={(e) => handleFileChange(e)}
                 />
             </label>

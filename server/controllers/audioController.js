@@ -17,11 +17,15 @@ const getAudio = async (req, res) => {
 }
 
 const getAllAudios = (req, res) => {
-    Audio.find({}, (err, audios) => {
+    //const { page = 1, limit = 10 } = req.query
+    const where = req.query
+    console.log('query:', req.query)
+    
+    Audio.find(where, (err, audios) => {
         if(err) {
             return res.status(400).json({msg: err.message})
         }
-        res.status(200).json({audios})
+        res.status(200).json(audios)
     }).sort({createdAt: -1})
 }
 

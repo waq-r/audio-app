@@ -19,7 +19,6 @@ const getAudio = async (req, res) => {
 const getAllAudios = (req, res) => {
     //const { page = 1, limit = 10 } = req.query
     const where = req.query
-    console.log('query:', req.query)
     
     Audio.find(where, (err, audios) => {
         if(err) {

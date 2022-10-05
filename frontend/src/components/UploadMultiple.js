@@ -14,8 +14,6 @@ const UploadMultiple = () => {
         setLines(lines)
     }
 
-    
-
     const handleFileChange = (e) => {
         Array.from(e.target.files).forEach(file => {
             setFileText(fileText => [...fileText, file])
@@ -33,8 +31,9 @@ const UploadMultiple = () => {
 
 
     return (
-        <div className="ui container">
-
+        <div className="ui stackable two column grid">
+        
+        <div className="column">
         <div className="ui secondary inverted segment">
                 <h2 className="ui header">Upload Multiple Files</h2>
                 <div className="ui segment">
@@ -64,15 +63,17 @@ const UploadMultiple = () => {
                 />
             </label>
         </div>
-
+        </div>
+        
+        <div className="column">
         <div className="ui secondary inverted segment">
                 <h2 className="ui header">File Lines</h2>
-                <div className="ui segment">
+                <div className="ui segment" style={{overflow: 'auto', maxHeight: 200 }}>
                 {lines && lines.length > 0 && <div className="ui list">
                         {lines.map((line, i) => {
                             return (
                                 <div key={i} className="item">
-                                    <div className="content">
+                                    <div className=" content">
                                         <div className="header">Audio title {i}</div>
                                         <div className="description">{parse(line)}</div>
                                     </div>
@@ -85,6 +86,7 @@ const UploadMultiple = () => {
                 
             </div>
             <TextFileUpload setDescriptionData={getFileTextLines} />
+        </div>
         </div>
 
         </div>

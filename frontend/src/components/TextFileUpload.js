@@ -9,14 +9,14 @@ const TextFileUpload = ({ setDescriptionData }) => {
         setSelectedFile(file.name)
         const reader = new FileReader();
         reader.onload = (e) => {
-            setDescriptionData(e.target.result.replace(/(\r\n|\n|\r)/gm, "<br>"));
+            setDescriptionData(e.target.result.replace(/(\r\n|\n|\n\n|\r)/gm, "<br>"));
         };
         reader.readAsText(file);
     }
     return (
-        <div className="text-file-upload">
-            <label className="ui button">
-            <i className="upload icon"></i>Upload Text File
+        <div className="ui basic inverted buttons">
+            <label className="ui inverted button">
+            <i className="file alternate icon"></i>Upload Text File
                     <input style={{display: 'none'}}
                     type="file"
                     accept="text/*"

@@ -3,12 +3,17 @@ import parse from 'html-react-parser'
 import TextFileUpload from "./TextFileUpload"
 
 
-const UploadMultiple = () => {
+const UploadMultiple = ({setDescriptionData}) => {
 
     const [fileText, setFileText] = useState([])
     const [text, setText] = useState([])
     const [lines, setLines] = useState([])
+    const [isActive, setIsActive] = useState(false)
+
     
+    const toggleClass = () => {
+        setIsActive(!isActive)
+    }
     const getFileTextLines = (data) => {
         let lines = data.split("<br>")
         setLines(lines)
@@ -31,66 +36,70 @@ const UploadMultiple = () => {
 
 
     return (
-        <div className="ui stackable two column grid">
-        
-        <div className="column">
-        <div className="ui secondary inverted segment">
-                <h2 className="ui header">Upload Multiple Files</h2>
-                <div className="ui segment">
-                {fileText && fileText.length > 0 && <div className="ui list">
-                        {fileText.map((item, index) => {
-                            return (
-                                <div key={index} className="item">
-                                    <div className="content">
-                                        <div className="header">{item.name}</div>
-                                        <div className="description">{parse(`${text[index]}`)}</div>
-                                    </div>
-                                </div>
-                            )
-                        }
-                        )}
-                        
-                </div> }
-                
+        <div className="ui inverted fluid accordion">
+            <div className="active title" onClick={toggleClass}>
+                <i className="dropdown icon"></i>
+                Uploads multiple text files.
             </div>
-            <label className="ui button">
-            <i className="upload cloud icon"></i>Upload multiple files
-                    <input style={{display: 'none'}}
-                    type="file"
-                    accept="text/*"
-                    multiple
-                    onChange={(e) => handleFileChange(e)}
-                />
-            </label>
-        </div>
-        </div>
+            <div className={isActive?'active content':'content'}>
         
-        <div className="column">
-        <div className="ui secondary inverted segment">
-                <h2 className="ui header">File Lines</h2>
-                <div className="ui segment" style={{overflow: 'auto', maxHeight: 200 }}>
-                {lines && lines.length > 0 && <div className="ui list">
-                        {lines.map((line, i) => {
-                            return (
-                                <div key={i} className="item">
-                                    <div className=" content">
-                                        <div className="header">Audio title {i}</div>
-                                        <div className="description">{parse(line)}</div>
-                                    </div>
-                                </div>
-                            )
-                        }
-                        )}
-                        
-                </div> }
+                <div className="ui stackable two column grid">
                 
-            </div>
-            <TextFileUpload setDescriptionData={getFileTextLines} />
-        </div>
-        </div>
+                <div className="column">
+                    <div className="ui inverted segment">
+                            {fileText && fileText.length > 0 && <div className="ui inverted relaxed divided list" style={{overflow: 'auto', maxHeight: 200 }}>
+                                    {fileText.map((item, index) => {
+                                        return (
+                                            <div key={index} className="item">
+                                                <div className="content" onClick={()=> setDescriptionData(`${text[index]}`)}>
+                                                    <div className="header">{item.name}</div>
+                                                    <div className="description">{parse(`${text[index]}`)}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                    )}
+                            </div> }
+                            
+                        <label className="ui inverted basic button">
+                        <i className="folder open icon"></i>Upload Multiple Files
+                                <input style={{display: 'none'}}
+                                type="file"
+                                accept="text/*"
+                                multiple
+                                onChange={(e) => handleFileChange(e)}
+                            />
+                        </label>
+                    </div>
+                </div>
+                
+                <div className="column">
+                    <div className="ui inverted segment">
+                            {lines && lines.length > 0 && <div className="ui inverted relaxed divided list" style={{overflow: 'auto', maxHeight: 200 }}>
+                                    {lines.map((line, i) => {
+                                        return (
+                                            <div key={i} className="item">
+                                                <div className=" content" onClick={()=> setDescriptionData(line)}>
+                                                    <div className="header">Audio title {i}</div>
+                                                    <div className="description">{parse(line)}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                    )}
+                                    
+                            </div> }
+                            
+                        <TextFileUpload setDescriptionData={getFileTextLines} />
+                    </div>
+                </div>
 
+                </div>
+        
         </div>
+    </div>
     )
+    
 }
 
 export default UploadMultiple

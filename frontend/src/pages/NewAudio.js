@@ -7,6 +7,7 @@ import {useAuthContext} from '../hooks/useAuthContext'
 import { Navigate } from "react-router-dom";
 import TextFileUpload from "../components/TextFileUpload";
 import AudioFileUpload from "../components/AudioFileUpload";
+import UploadMultiple from "../components/UploadMultiple";
 
 
 const NewAudio = () => {
@@ -112,6 +113,7 @@ const NewAudio = () => {
 
     return (
         <div className="ui inverted verticle fluid segment">
+            <UploadMultiple setDescriptionData={setDescriptionData} />
         <div className="ui inverted segment">
         <div className="ui labeled input">
             <div className="ui label">

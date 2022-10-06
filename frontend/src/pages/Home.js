@@ -1,5 +1,4 @@
 import React from 'react'
-import UploadMultiple from '../components/UploadMultiple'
 
 const Home = () => {
 
@@ -9,7 +8,6 @@ const Home = () => {
         <h1>Welcome to HiVO</h1>
       </div>
       <div className='ui inverted segment'>
-              <UploadMultiple />
       </div>
     </div>
   )

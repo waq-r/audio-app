@@ -5,7 +5,6 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import AudioList from "../components/AudioList";
 import {useAuthContext} from '../hooks/useAuthContext'
 import { Navigate } from "react-router-dom";
-import TextFileUpload from "../components/TextFileUpload";
 import AudioFileUpload from "../components/AudioFileUpload";
 import UploadMultiple from "../components/UploadMultiple";
 
@@ -132,7 +131,9 @@ const NewAudio = () => {
             <div className="ui two column stackable center aligned grid">
                 <div className="middle aligned row">
                     <div className="column">
-                        <TextFileUpload setDescriptionData={setDescriptionData} />
+                        <div className="ui inverted basic button" onClick={() => setDescriptionData("<br />")} >
+                            Reset
+                        </div>
                     </div>
                     <div className="column">
                         <AudioFileUpload addAudio={addAudio} />

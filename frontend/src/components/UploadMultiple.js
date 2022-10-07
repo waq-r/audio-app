@@ -3,35 +3,62 @@ import parse from 'html-react-parser'
 import TextFileUpload from "./TextFileUpload"
 
 
-const UploadMultiple = ({setDescriptionData}) => {
+const UploadMultiple = ({setTitleAndNotes}) => {
 
-    const [fileText, setFileText] = useState([])
-    const [text, setText] = useState([])
+    const [files, setFiles] = useState([])
     const [lines, setLines] = useState([])
     const [isActive, setIsActive] = useState(false)
 
+    const onFileTextDelete = (file) => {
+        const updatedFiles = files.filter((f) => 
+            f.id !== file.id
+        )
+        setFiles(updatedFiles)
+
+    }
+    const onFileTextClick = (file) => {
+        const updatedFiles = files.map((f) => {
+
+            if(f.id === file.id) {
+                return {...f, ...{"selected": true}}
+            }
+            return f
+        })
+        setFiles(updatedFiles)
+        setTitleAndNotes(file)
+
+    }
     
     const toggleClass = () => {
         setIsActive(!isActive)
     }
     const getFileTextLines = (data) => {
-        let lines = data.split("<br>")
+        const lines = data.split("<br>").map(line => {return  {text: line, name: null} })
+        console.log('lines: ',lines)
+
         setLines(lines)
     }
 
     const handleFileChange = (e) => {
-        Array.from(e.target.files).forEach(file => {
-            setFileText(fileText => [...fileText, file])
+        Array.from(e.target.files).forEach((f, i) => {
+            const fileName = f.name
+            const fileId = Date.now() + i
 
             const reader = new FileReader()
-            reader.onload = (file) => {
-                setText(text => [...text, file.target.result.replace(/(\r\n|\n|\r)/gm, "<br>")])
-        }
-        reader.readAsText(file)
+            reader.onload = (f) => {
+                const fileInfo = {
+                    id: fileId,
+                    name: fileName,
+                    text: f.target.result.replace(/(\r\n|\n|\r)/gm, "<br>"),
+                    checked: false
+                }
+
+                setFiles(files => [...files, fileInfo])
+            }
+            reader.readAsText(f)
             
         })
         
-        //setFileText(texts)
     }
 
 
@@ -47,14 +74,28 @@ const UploadMultiple = ({setDescriptionData}) => {
                 
                 <div className="column">
                     <div className="ui inverted segment">
-                            {fileText && fileText.length > 0 && <div className="ui inverted relaxed divided list" style={{overflow: 'auto', maxHeight: 200 }}>
-                                    {fileText.map((item, index) => {
+                            {files && files.length > 0 && <div className="ui inverted relaxed divided list" style={{overflow: 'auto', maxHeight: 200 }}>
+                                    {files.map((file) => {
                                         return (
-                                            <div key={index} className="item">
-                                                <div className="content" onClick={()=> setDescriptionData(`${text[index]}`)}>
-                                                    <div className="header">{item.name}</div>
-                                                    <div className="description">{parse(`${text[index]}`)}</div>
+                                            <div key={file.id} className="item">
+                                                <div className={`${file.selected?"ui inverted olive segment":"ui inverted segment"}`} >
+                                                    <div className="ui small header">{`${file.name}`}</div>
+                                                    <div className="ui content">{parse(`${file.text}`)}</div>
+                                                
+                                                <div className="ui right floated content">
+                                                    <button 
+                                                        className={`${file.selected?'ui olive button':'ui grey button'}`}
+                                                        onClick={()=> {onFileTextClick(file)}}
+                                                    >{`${file.selected?'Selected':'Select'}`}
+                                                    </button>
+                                                    <button 
+                                                        className="ui grey button"
+                                                        onClick={()=>{onFileTextDelete(file)}}
+                                                    >Delete
+                                                    </button>
                                                 </div>
+                                                </div>
+                                                
                                             </div>
                                         )
                                     }
@@ -79,9 +120,9 @@ const UploadMultiple = ({setDescriptionData}) => {
                                     {lines.map((line, i) => {
                                         return (
                                             <div key={i} className="item">
-                                                <div className=" content" onClick={()=> setDescriptionData(line)}>
+                                                <div className=" content" onClick={()=> setTitleAndNotes(line)}>
                                                     <div className="header">Audio title {i}</div>
-                                                    <div className="description">{parse(line)}</div>
+                                                    <div className="description">{parse(`${line.text}`)}</div>
                                                 </div>
                                             </div>
                                         )

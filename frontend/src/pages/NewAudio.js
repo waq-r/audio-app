@@ -15,12 +15,23 @@ const NewAudio = () => {
     const [audioList, setAudioList] = useState([]); //Array of audios
     const description = useRef(null); //Ref for textarea
     const title = useRef(null); //Ref for textarea
+    const [audioTitle, setAudioTitle] = useState('')
     const [descriptionData, setDescriptionData] = useState("<br />")
 
     if(!user || (user && user.role !== 'admin')) {
         return <Navigate to="/login" />
     }
-        
+    
+    const setTitleAndNotes= (audioInfo) => {
+        //convert audioInfo.name slug to title
+        if(audioInfo.name){
+        const name = audioInfo.name.replace(/\.[\w ]{2,4}$/g, '')
+        setAudioTitle(name.replace(/-/g, ' '))
+        }
+
+        setDescriptionData(audioInfo.text)
+
+    }
    
     const addAudio = async(audio) => {
         const newAudio = { 
@@ -112,13 +123,13 @@ const NewAudio = () => {
 
     return (
         <div className="ui inverted verticle fluid segment">
-            <UploadMultiple setDescriptionData={setDescriptionData} />
+            <UploadMultiple setTitleAndNotes={setTitleAndNotes} />
         <div className="ui inverted segment">
         <div className="ui labeled input">
             <div className="ui label">
                 Title:
             </div>
-            <input ref={title} type="text" placeholder="Untitled" />
+            <input ref={title} type="text" placeholder="Untitled" value={`${audioTitle}`} onChange = {(e) => setAudioTitle(e.target.value)} />
             </div>
             <div className="ui text segment">
             <CKEditor

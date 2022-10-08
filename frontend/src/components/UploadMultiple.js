@@ -22,7 +22,7 @@ const UploadMultiple = ({setTitleAndNotes}) => {
             if(f.id === file.id) {
                 return {...f, ...{"selected": true}}
             }
-            return f
+            return {...f, ...{"selected": false}}
         })
         setFiles(updatedFiles)
         setTitleAndNotes(file)

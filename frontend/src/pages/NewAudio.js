@@ -109,6 +109,11 @@ const NewAudio = () => {
 
     }
 
+    // select all audios of audioList
+    const selectAllAudios = () => {
+        setAudioList(audioList.map(audio => { return {...audio, ...{selected: true}} }))
+    }
+
     // toggle status of audio as selected or unselected
     const toggleSelect = (audio) => {
         audio.selected = !audio.selected
@@ -157,7 +162,7 @@ const NewAudio = () => {
             </div>
 
             <div className="ui inverted verticle segment">
-            <AudioList audioList={audioList} onDelete={deleteAudio} onSelect={toggleSelect} deleteSelectedAudios={deleteSelectedAudios} />
+            <AudioList audioList={audioList} onDelete={deleteAudio} onSelect={toggleSelect} deleteSelectedAudios={deleteSelectedAudios} onSelectAll={selectAllAudios} />
             </div>
 
         </div>

@@ -4,7 +4,7 @@ import SelectUsers from "./SelectUsers"
 import parse from 'html-react-parser'
 
 
-const AudioList = ({ audioList, onDelete, onSelect, deleteSelectedAudios }) => {
+const AudioList = ({ audioList, onDelete, onSelect, deleteSelectedAudios, onSelectAll }) => {
   
   const {user} = useAuthContext()
 
@@ -183,7 +183,9 @@ const emailUser = async(notifications) => {
     </div>
 
     <div className="ui center aligned inverted segment">
-      <div className="ui inverted message">{error}</div>
+      <div className="ui inverted message">{error}
+        <div className="ui right floated button" onClick={onSelectAll}>Select All</div>
+      </div>
     <button
                 className={`ui ${(userToSend.length > 0 ) ? 'olive' : 'disabled'} button ${buttonClass}`}
                 onClick={() => onSave()}

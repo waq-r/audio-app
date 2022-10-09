@@ -28,8 +28,8 @@ const AudioFileUploader = ({addAudio}) => {
     }
     return (
         <div className="file-uploader">
-            <label className="ui button">
-                        <i className="upload icon"></i>Upload Audio
+            <label className="ui labled icon button">
+                        <i className="upload icon"></i> Upload Audio
                     <input style={{display: 'none'}}
                         onChange={(e) => handleAudioUpload(e)}
                         type="file"

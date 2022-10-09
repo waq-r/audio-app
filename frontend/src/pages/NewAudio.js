@@ -1,12 +1,14 @@
-import React, {useRef, useState } from "react";
-import RecordAudio from "../components/RecordAudio";
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import AudioList from "../components/AudioList";
+import React, {useRef, useState } from "react"
+import RecordAudio from "../components/RecordAudio"
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import AudioList from "../components/AudioList"
 import {useAuthContext} from '../hooks/useAuthContext'
-import { Navigate } from "react-router-dom";
-import AudioFileUpload from "../components/AudioFileUpload";
-import UploadMultiple from "../components/UploadMultiple";
+import { Navigate } from "react-router-dom"
+import AudioFileUpload from "../components/AudioFileUpload"
+import UploadMultipleLines from "../components/UploadMultipleLines"
+import UploadMultipleFiles from "../components/UploadMultipleFiles"
+
 
 
 const NewAudio = () => {
@@ -17,6 +19,19 @@ const NewAudio = () => {
     const title = useRef(null); //Ref for textarea
     const [audioTitle, setAudioTitle] = useState('')
     const [descriptionData, setDescriptionData] = useState("<br />")
+    const [isActive, setIsActive] = useState(false)
+
+    const editorConfiguration = {
+        toolbar:{
+            //items: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote' ],
+            shouldNotGroupWhenFull: true
+        }
+
+    }
+
+    const toggleClass = () => {
+        setIsActive(!isActive)
+    }
 
     if(!user || (user && user.role !== 'admin')) {
         return <Navigate to="/login" />
@@ -81,9 +96,7 @@ const NewAudio = () => {
     }
 
     const deleteAudio = async (audio, draft) => {
-        console.log('deleteAudio before: ', audioList)
         setAudioList(audioList.filter((audioFile) => audioFile.id !== audio.id))
-        console.log('deleteAudio after: ', audioList)
 
 
         if (audio._id && draft){
@@ -95,7 +108,6 @@ const NewAudio = () => {
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log('deleted:', data)
                     setAudioList(audioList.filter((audioObj) => audioObj._id !== data._id));
                 }
             )
@@ -127,8 +139,18 @@ const NewAudio = () => {
     }
 
     return (
-        <div className="ui inverted verticle fluid segment">
-            <UploadMultiple setTitleAndNotes={setTitleAndNotes} />
+        <div className="ui inverted horizontal fluid accordion menu">
+            <div className="active title" onClick={toggleClass}>
+                <div className='ui icon button'>
+                    <i className="list icon"></i>
+                </div>
+            </div>
+            <div className={isActive?'active content':'content'}>
+                <UploadMultipleFiles setTitleAndNotes={setTitleAndNotes} />
+            </div>
+
+        <div className="ui inverted verticle fluid active segment">
+            <UploadMultipleLines setTitleAndNotes={setTitleAndNotes} />
         <div className="ui inverted segment">
         <div className="ui labeled input">
             <div className="ui label">
@@ -140,6 +162,7 @@ const NewAudio = () => {
             <CKEditor
                     ref={description}
                     editor={ ClassicEditor }
+                    config={ editorConfiguration }
                     data= {descriptionData}
                 />
             </div>
@@ -166,6 +189,8 @@ const NewAudio = () => {
             </div>
 
         </div>
+        </div>
+
         </div>
     )
 }

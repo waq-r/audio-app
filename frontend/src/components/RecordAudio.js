@@ -31,6 +31,7 @@ export default class AudioRecorder extends Component {
     const { status, audioSrc, audioType } = this.state;
     
     const audioProps = {
+      width: 330,
       audioType,
       audioBitsPerSecond: 320000,
       // audioOptions: {sampleRate: 30000}, // 设置输出音频采样率
@@ -72,17 +73,17 @@ export default class AudioRecorder extends Component {
         <AudioAnalyser {...audioProps}>
           <div className="ui inverted segment">
             <button
-              className="ui labeled icon button"
+              className="ui compact labeled icon button"
               onClick={() => this.controlAudio("recording")}>
               <i className="play icon" />
               Start
             </button>
-            <button className="ui labeled icon button" onClick={() => this.controlAudio("paused")}>
+            <button className="ui compact icon button" onClick={() => this.controlAudio("paused")}>
             <i className="pause icon" />
               Pause
             </button>
             <button
-              className="ui labeled icon button"
+              className="ui compact labeled icon button"
               onClick={() => this.controlAudio("inactive")}
             >
                 <i className="stop icon" />

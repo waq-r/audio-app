@@ -139,17 +139,21 @@ const NewAudio = () => {
     }
 
     return (
-        <div className="ui inverted horizontal fluid accordion menu">
-            <div className="active title" onClick={toggleClass}>
-                <div className='ui icon button'>
-                    <i className="list icon"></i>
-                </div>
-            </div>
-            <div className={isActive?'active content':'content'}>
-                <UploadMultipleFiles setTitleAndNotes={setTitleAndNotes} />
-            </div>
+        <div className='ui inverted content'>
 
-        <div className="ui inverted verticle fluid active segment">
+      <div className='ui icon tiny inverted basic button' onClick={toggleClass}>
+          <i className="bars icon"></i>
+        </div>
+      <div className={`${isActive?'ui two column stackable grid':'ui one column stackable grid'}`}>
+
+    <div className="column">
+        <div className={`${isActive?'ui content':"ui content transition hidden"}`} >
+            <UploadMultipleFiles setTitleAndNotes={setTitleAndNotes} />
+        </div>
+                </div>
+    <div className="column">
+
+        <div className="ui inverted verticle fluid segment">
             <UploadMultipleLines setTitleAndNotes={setTitleAndNotes} />
         <div className="ui inverted segment">
         <div className="ui labeled input">
@@ -191,6 +195,8 @@ const NewAudio = () => {
         </div>
         </div>
 
+        </div>
+        </div>
         </div>
     )
 }

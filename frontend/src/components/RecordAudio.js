@@ -31,7 +31,7 @@ export default class AudioRecorder extends Component {
     const { status, audioSrc, audioType } = this.state;
     
     const audioProps = {
-      width: 330,
+      width: 300,
       audioType,
       audioBitsPerSecond: 320000,
       // audioOptions: {sampleRate: 30000}, // 设置输出音频采样率

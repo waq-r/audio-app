@@ -208,14 +208,26 @@ getAudio()
     return (
     <div className="ui inverted segment">
 
-        <div className="ui two column stackable center aligned grid">
+        <div className="ui one column stackable center aligned grid">
             <div className="middle inverted aligned row">
                 {userNotification &&
                     <div className="column">
-                        <div className="ui left aligned inverted header">
-                            {userNotification.audioId?.title}
-                            <div className="sub header">
-                                Sent <TimeAgo date={userNotification.audioId?.date} />
+
+                        <div className="ui three column stackable grid">
+                            <div className="column">
+                                <div className="ui left aligned inverted tiny header">
+                                    {userNotification.audioId?.title}
+                                    <div className="sub header">
+                                        Sent <TimeAgo date={userNotification.audioId?.date} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="column">
+                                <h1 className="ui center aligned inverted header">
+                                    {parse(userNotification.audioId?.description)}
+                                    </h1>
+                            </div>
+                            <div className="column">
                             </div>
                         </div>
 
@@ -225,12 +237,9 @@ getAudio()
                                     type={userNotification.audioId?.audio}>
                             </audio> 
                         </div>
+
                     </div>
                 }
-                <div className="ui vertical divider"></div>
-                <div className="column">
-                {userNotification && parse(userNotification.audioId.description)}
-                </div>
 
       </div>
       <div className="ui horizontal divider"></div>
@@ -241,7 +250,7 @@ getAudio()
                     <div className="header"><h3>Upload VoiceOver</h3></div>
 
                 <form onSubmit={submitHandler} className ={`ui inverted form`}>
-                    <label className={`fluid inverted ui button`}>
+                    <label className={`inverted ui large button`}>
                         <i className="upload icon"></i>Upload 
                     <input style={{display: 'none'}}
                         onChange={(event) => { 
@@ -252,7 +261,7 @@ getAudio()
                         accept="audio/wav,audio/mp3,audio/ogg,audio/webm"
                     />
                     {` ${selectedFile}`}
-                    </label>
+                    </label><br />
                     <button className={`ui segment big button ${formClass}`} >Submit</button>
                 </form>
 

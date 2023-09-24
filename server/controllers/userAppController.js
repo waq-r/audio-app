@@ -1,5 +1,6 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const path = require("path");
 
 const UserApp = require("../models/userAppModel");
 const User = require("../models/userModel");
@@ -9,47 +10,80 @@ const Audio = require("../models/audioModel");
 // controller functions
 const { addUserNotification } = require("./userNotificationController");
 
+/**
+ * Create a token with the given user ID
+ *
+ * @param {string} _id - The user ID
+ * @returns {string} - The generated token
+ */
 const createToken = (_id) => {
+  // Sign the user ID with the secret key and set the expiration time to 3 days
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
 };
 
-// auth token for userApp
+/**
+ * Authenticates the user for the user app.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the authentication is complete.
+ */
 const userAppAuth = async (req, res) => {
   const { app_id, app_secret } = req.body;
 
   try {
+    // Login the user app
     const user = await UserApp.login(app_id, app_secret);
-    // create a token
+
+    // Create a token for the user
     const token = createToken(user.userId);
 
-    // return Bearer token
-    res.status(200).json({ token: token });
+    // Send the token as a response
+    res.status(200).json({ token });
   } catch (error) {
+    // Send an error response if authentication fails
     res.status(400).json({ error: error.message });
   }
 };
 
-// useing User model, get all users where {role: "user"}
+/**
+ * Retrieve a list of users with the role "user".
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The list of users with their id and name as a JSON response.
+ */
 const getUserList = async (req, res) => {
   try {
-    // Use the User model to find all users with user type "user"
-    const adminUsers = await User.find({ role: "user" }).select("_id, name");
+    // Use the User model to find all users with the role "user"
+    const users = await User.find({ role: "user" }).select("_id name");
 
     // Send the list of users as a JSON response
-    res.status(200).json(adminUsers);
+    res.status(200).json(users);
   } catch (error) {
     // Handle any errors that occur during the database query
     res.status(500).json({ message: "Error retrieving users" });
   }
 };
 
-getuserNameEmail = async (req, res) => {
+/**
+ * Retrieves the name and email of users with the specified IDs
+ *
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {Array} - An array of objects containing the name and email of users
+ * @throws {Error} - If there is an error during the database query
+ */
+getUserNameEmail = async (req, res) => {
   try {
-    // Use the User model to find users with the specified IDs
+    // Retrieve the IDs of users from the request body
     const { users } = req.body;
+
+    // Find users with the specified IDs and select only the name and email fields
     const userNameEmail = await User.find({ _id: { $in: users } }).select(
       "name email"
     );
+
+    // Map the retrieved users to an array of objects with name and email properties
     const userNameEmailObj = userNameEmail.map((user) => {
       return {
         Name: user.name,
@@ -57,6 +91,7 @@ getuserNameEmail = async (req, res) => {
       };
     });
 
+    // Return the array of objects containing the name and email of users
     return userNameEmailObj;
   } catch (error) {
     // Handle any errors that occur during the database query
@@ -64,45 +99,52 @@ getuserNameEmail = async (req, res) => {
   }
 };
 
-// Email notifications
+// This function sends email notifications to the recipient.
+// It retrieves the recipient's email address using the `getuserNameEmail` function.
+// The email contains a text part and an HTML part.
 const sendEmail = async (req, res) => {
-  const sendTo = await getuserNameEmail(req, res);
+  // Retrieve the recipient's email address
+  const sendTo = await getUserNameEmail(req, res);
 
-  const TextPart = `      Hi,
-  
-  You have a new notification: ${req.body.title}.
+  // Define the text part of the email
+  const TextPart = `Hi,
 
-  Access the web app here: https://hivo.online.
+You have a new notification: ${req.body.title}.
 
-  Best regards,
-  HiVO`;
+Access the web app here: https://hivo.online.
 
+Best regards,
+HiVO`;
+
+  // Define the HTML part of the email
   const HTMLPart = `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Email Notification</title>
-  </head>
-  <body>
-      <div style="font-family: Arial, sans-serif;">
-          <p>Hi,</p>
-  
-          <p>You have a new notification: <strong>${req.body.title}</strong>.</p>
-  
-          <p>Access the web app <a href="https://hivo.online">here</a>.</p>
-  
-          <p>Best regards,<br>HiVO</p>
-      </div>
-  </body>
-  </html>`;
-  // connect mailjet and send email
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Notification</title>
+</head>
+<body>
+    <div style="font-family: Arial, sans-serif;">
+        <p>Hi,</p>
+
+        <p>You have a new notification: <strong>${req.body.title}</strong>.</p>
+
+        <p>Access the web app <a href="https://hivo.online">here</a>.</p>
+
+        <p>Best regards,<br>HiVO</p>
+    </div>
+</body>
+</html>`;
+
+  // Connect to Mailjet using the API key and secret
   const mailjet = require("node-mailjet").apiConnect(
     process.env.MAILJET_API_KEY,
     process.env.MAILJET_API_SECRET
   );
 
   try {
+    // Send the email using Mailjet
     mailjet.post("send", { version: "v3.1" }).request({
       Messages: [
         {
@@ -122,25 +164,32 @@ const sendEmail = async (req, res) => {
   }
 };
 
-// Add new audio and upload file
+/**
+ * Adds an audio file to the database and performs necessary validations.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} - The response object.
+ */
 const addAudio = async (req, res) => {
-  // ensure req.body has title property
+  // Check if title is specified
   if (!req.body.title) {
     return res.status(400).json({ message: "No title was specified." });
   }
 
-  // ensure req.body has description property
+  // Check if description is specified
   if (!req.body.description) {
     return res.status(400).json({ message: "No description was specified." });
   }
 
-  // ensure req.body has audioFile property
+  // Check if files were uploaded
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({ message: "No files were uploaded." });
   }
 
   const audioFile = req.files.audioFile;
-  // Check if the uploaded file is an audio file with a valid extension
+
+  // Define the allowed file extensions
   const allowedExtensions = [
     ".wav",
     ".wave",
@@ -152,10 +201,13 @@ const addAudio = async (req, res) => {
     ".mpeg",
     ".flac",
   ];
+
+  // Get the file extension of the uploaded audio file
   const fileExtension = audioFile.name
     .substring(audioFile.name.lastIndexOf("."))
     .toLowerCase();
 
+  // Check if the file extension is valid
   if (!allowedExtensions.includes(fileExtension)) {
     return res.status(400).json({
       message:
@@ -163,17 +215,17 @@ const addAudio = async (req, res) => {
     });
   }
 
-  // ensure req.body has users property with valid mongo id
+  // Check if users are specified
   if (!req.body.users) {
     return res.status(400).json({ message: "No users were specified." });
   }
 
-  // create an array from users
+  // Convert users to an array if it is not already an array
   req.body.users = Array.isArray(req.body.users)
     ? req.body.users
     : [req.body.users];
 
-  // Check each ID in the array and throw an error if any ID is invalid
+  // Check if all user IDs are valid MongoDB IDs
   if (
     req.body.users.some((userId) => !mongoose.Types.ObjectId.isValid(userId))
   ) {
@@ -182,78 +234,63 @@ const addAudio = async (req, res) => {
       .json({ message: 'Invalid MongoDB ID found in the "users" array.' });
   }
 
-  const uploadPath = __dirname + "/../public/audio/" + `${audioFile.name}`;
+  // Set the upload path for the audio file
+  const uploadPath = path.join(
+    __dirname,
+    "..",
+    "public",
+    "audio",
+    audioFile.name
+  );
 
-  //audioType
-  const audio = "audio/" + fileExtension.substring(1);
+  // Set the audio file path
+  const audio = `audio/${fileExtension.substring(1)}`;
 
+  // Get the title, description, and draft from the request body
   const { title, description, draft } = req.body;
+  // new promise wrapper around try block to handle errors
+  return new Promise(async (resolve, reject) => {
+    // Create a new audio file in the database
+    const newAudio = await Audio.create({ audio, title, description, draft });
 
-  /**
-   * promise to save audio then file upload - returns a promise
-   */
-  new Promise((resolve, reject) => {
-    const newAudio = Audio.create({
-      audio,
-      title,
-      description,
-      draft,
-    });
+    // Create a notification object
+    const notificationObj = {
+      userType: "admin",
+      link: `${newAudio._id}${fileExtension}`,
+      audioId: `${newAudio._id}`,
+      videoId: null,
+      url: null,
+      notificationSent: 0,
+    };
 
-    if (!newAudio) {
-      reject("Error creating new audio.");
-    } else {
-      resolve(newAudio);
-    }
-  })
-    .then((newAudio) => {
-      return new Promise((resolve, reject) => {
-        const notificationObj = {
-          userType: "admin",
-          link: `${newAudio._id}${fileExtension}`,
-          audioId: `${newAudio._id}`,
-          videoId: null,
-          url: null,
-          notificationSent: 0,
-        };
-        // merge notificationObj with req.body
-        req.body = Object.assign({}, req.body, notificationObj);
-        req.result = { audioId: newAudio._id.toHexString() };
+    // Merge the notification object with the request body
+    req.body = { ...req.body, ...notificationObj };
 
-        const uploadPath =
-          __dirname + "/../public/audio/" + `${newAudio._id}${fileExtension}`;
-        audioFile.mv(uploadPath, function (err) {
-          if (err) {
-            reject("Error storing audio file.");
-          } else {
-            // create audio url including http or https + host name, port and path
-            const audioUrl =
-              req.protocol +
-              "://" +
-              req.get("host") +
-              "/api/v1/media/audio/" +
-              `${newAudio._id}${fileExtension}`;
-            req.result.url = audioUrl;
+    // Set the audioId in the response object
+    req.result = { audioId: newAudio._id.toHexString() };
 
-            resolve(newAudio);
-          }
-        });
-      });
-    })
-
-    .then(async (newAudio) => {
-      await addUserNotification(req);
-      sendEmail(req, res);
-
-      res.status(200).json(req.result);
-      return;
-    })
-    .catch((error) => {
-      // Reject promise with error
-      res.status(500).json(error);
-    });
+    // Set the upload path for the audio file
+    const uploadPath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "audio",
+      `${newAudio._id}${fileExtension}`
+    );
+    await audioFile.mv(uploadPath);
+    const audioUrl = `https://${req.get("host")}/api/v1/media/audio/${
+      newAudio._id
+    }${fileExtension}`;
+    req.result.url = audioUrl;
+    await addUserNotification(req);
+    // sendEmail(req, res);
+    res.status(200).json(req.result);
+  }).catch((error) => {
+    res.status(500).json(error);
+  });
 };
 
+// Export the controller functions
 module.exports = {
   addAudio,
   userAppAuth,

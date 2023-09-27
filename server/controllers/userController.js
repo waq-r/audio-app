@@ -35,15 +35,20 @@ const loginUser = async (req, res) => {
   }
 };
 
-// signup a user
+/**
+ * Sign up a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 const signupUser = async (req, res) => {
-  const { name, email, password } = req.body;
-
   try {
+    const { name, email, password } = req.body;
+
     const user = await User.signup(name, email, password);
     const { _id, active, role, notification } = user;
-    // create a token
-    const token = createToken(user._id);
+
+    const token = createToken(_id);
 
     res
       .status(200)

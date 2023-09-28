@@ -98,13 +98,20 @@ const getUserNotification = async (req, res) => {
   }
 };
 
-// get all users
+// Function to get all users
+/**
+ * Retrieves all users from the database based on the provided request body.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves with the retrieved users or rejects with an error message.
+ */
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find(req.body);
-    res.status(201).json(users);
+    const users = await User.find(req.body); // Find users based on the request body
+    res.status(201).json(users); // Send response with status 201 and the retrieved users
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: err.message }); // Send response with status 400 and an error message
   }
 };
 

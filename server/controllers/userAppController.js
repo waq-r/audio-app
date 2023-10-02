@@ -65,6 +65,11 @@ const getUserList = async (req, res) => {
   }
 };
 
+// Helper function to get the file extension
+const getFileExtension = (filename) => {
+  return "." + filename.split(".").pop();
+};
+
 /**
  * Retrieves the name and email of users with the specified IDs
  *
